@@ -5,7 +5,7 @@ from __future__ import annotations
 import signal
 import sys
 
-from services.database.client import ClickHouseClient
+from services.database.client import ClickHouseClient, ClickHouseClientPool
 from services.importer.worker import ImportWorker
 from services.shared.config import load_config
 from services.shared.logging import setup_logging
@@ -22,8 +22,8 @@ def run_importer() -> int:
         log_to_file=config.logging.log_to_file,
     )
 
-    db = ClickHouseClient(config.database)
-    worker = ImportWorker(config, db)
+    db_pool = ClickHouseClientPool(config.database)
+    worker = ImportWorker(config, db_pool)
 
     def _handle_signal(*_) -> None:
         logger.info("signal_received")
@@ -34,9 +34,9 @@ def run_importer() -> int:
 
     try:
         logger.info("waiting_for_database", host=config.database.host)
-        _wait_for_database(db, max_retries=30, delay=2.0)
+        _wait_for_database(config.database, max_retries=30, delay=2.0)
 
-        db.connect()
+        db_pool.connect()
         stats = worker.run()
         stats.log_summary(logger)
 
@@ -48,14 +48,15 @@ def run_importer() -> int:
         return 0
 
     finally:
-        db.close()
+        db_pool.close()
 
 
-def _wait_for_database(db: ClickHouseClient, max_retries: int, delay: float) -> None:
+def _wait_for_database(db_config, max_retries: int, delay: float) -> None:
     """Block until ClickHouse is reachable."""
     import time
 
-    for attempt in range(1, max_retries + 1):
+    for _ in range(max_retries):
+        db = ClickHouseClient(db_config)
         try:
             db.connect()
             if db.ping():

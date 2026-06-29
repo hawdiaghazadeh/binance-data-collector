@@ -76,5 +76,5 @@ def test_env_override_database_host(sample_config_file: Path, monkeypatch: pytes
 def test_default_config_values() -> None:
     config = AppConfig()
     assert config.downloader.max_concurrent == 8
-    assert config.importer.batch_size == 50_000
+    assert config.importer.batch_size == 25_000
     assert config.database.compression is True

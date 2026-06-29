@@ -70,12 +70,15 @@ class DownloaderConfig(BaseModel):
 class ImporterConfig(BaseModel):
     """Importer worker, batching, and validation settings."""
 
-    max_workers: int = Field(default=4, ge=1, le=32)
-    batch_size: int = Field(default=50_000, ge=100)
+    max_workers: int = Field(default=1, ge=1, le=32)
+    batch_size: int = Field(default=25_000, ge=100)
     retry_count: int = Field(default=3, ge=0, le=20)
     retry_backoff_seconds: float = Field(default=2.0, ge=0.1)
     delete_after_import: bool = False
     validate_gaps: bool = True
+    serial_import: bool = True
+    strict_validation: bool = True
+    rollback_on_failure: bool = True
 
 
 class LoggingConfig(BaseModel):

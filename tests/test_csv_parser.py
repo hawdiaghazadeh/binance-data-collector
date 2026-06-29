@@ -57,6 +57,18 @@ def test_parse_csv_stream_invalid_high_low() -> None:
     assert result.invalid_count >= 1
 
 
+def test_parse_csv_stream_skips_header_row() -> None:
+    csv_with_header = (
+        "open_time,open,high,low,close,volume,close_time,quote_volume,count,"
+        "taker_buy_volume,taker_buy_quote_volume,ignore\n"
+        + SAMPLE_CSV
+    )
+    result = parse_csv_stream(csv_with_header, symbol="BTCUSDT", timeframe="1h")
+    assert result.row_count == 2
+    assert result.invalid_count == 0
+    assert "Skipped CSV header row" in result.warnings
+
+
 def test_extract_csv_from_zip(sample_zip: Path) -> None:
     name, content = extract_csv_from_zip(sample_zip)
     assert name.endswith(".csv")

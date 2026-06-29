@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from services.database.client import ClickHouseClient
+from services.database.client import ClickHouseClient, ClickHouseClientPool
 from services.database.schema import ensure_schema
 from services.shared.config import DatabaseConfig
 from services.shared.models import KlineRow
@@ -109,7 +109,38 @@ def test_ensure_schema_calls_commands() -> None:
     assert mock_client.command.call_count == 3
 
 
+@patch("services.database.client.clickhouse_connect.get_client")
+def test_delete_month_klines(mock_get_client: MagicMock, db_config: DatabaseConfig) -> None:
+    mock_client = MagicMock()
+    mock_get_client.return_value = mock_client
+
+    db = ClickHouseClient(db_config)
+    db.connect()
+    db.delete_month_klines("BTCUSDT", "1h", 2024, 1)
+
+    mock_client.command.assert_called()
+    call_args = mock_client.command.call_args
+    assert "DELETE" in call_args[0][0]
+    assert call_args[1]["parameters"]["symbol"] == "BTCUSDT"
+
+
 def test_client_not_connected_raises(db_config: DatabaseConfig) -> None:
     db = ClickHouseClient(db_config)
     with pytest.raises(RuntimeError, match="not connected"):
         _ = db.client
+
+
+@patch("services.database.client.clickhouse_connect.get_client")
+def test_client_pool_thread_local_clients(mock_get_client: MagicMock, db_config: DatabaseConfig) -> None:
+    mock_client = MagicMock()
+    mock_get_client.return_value = mock_client
+
+    pool = ClickHouseClientPool(db_config)
+    pool.connect()
+
+    client_a = pool.get()
+    client_b = pool.get()
+    assert client_a is client_b
+
+    pool.close()
+    assert mock_get_client.call_count >= 2

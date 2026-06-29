@@ -252,12 +252,39 @@ The importer validates every row:
 
 All issues are logged to `logs/errors.log` and `logs/importer.log`.
 
+## Data Integrity (Import)
+
+Each monthly ZIP file is imported **transactionally**:
+
+| Step | Action |
+|------|--------|
+| 1 | Delete existing rows for that symbol/timeframe/month |
+| 2 | Stream-insert all candles from the ZIP |
+| 3 | Strict validation (no invalid/duplicate rows in CSV) |
+| 4 | Mark file complete in `import_state` only on full success |
+| On failure | Roll back — delete month's rows, do not mark file |
+
+Files are processed **in chronological order** (`serial_import: true` by default):
+`symbol → timeframe → year → month` (oldest first).
+
+Re-running the importer skips files already in `import_state`. Failed files are retried from scratch with a clean month.
+
+Config (`config/config.yaml`):
+
+```yaml
+importer:
+  serial_import: true        # chronological, one file at a time
+  strict_validation: true    # fail file on any invalid/duplicate row
+  rollback_on_failure: true  # delete partial data on error
+```
+
 ## Resumability
 
 | Feature              | Mechanism                                      |
 |----------------------|------------------------------------------------|
 | Download resume      | Skip existing valid ZIP files on disk          |
 | Import resume        | `import_state` table tracks completed files    |
+| Failed import        | Month rolled back; file retried on next run    |
 | Checksum verification| SHA256 from Binance `.CHECKSUM` files          |
 | Graceful shutdown    | SIGINT/SIGTERM handled in both services        |
 
@@ -299,11 +326,17 @@ curl http://localhost:8123/ping
 
 ### Duplicate data
 
-`ReplacingMergeTree` deduplicates on background merge. For immediate dedup:
+The importer prevents duplicates at import time (delete-before-insert per month). For verification:
 
 ```sql
-OPTIMIZE TABLE crypto.klines FINAL;
+SELECT symbol, timeframe, open_time, count() AS cnt
+FROM crypto.klines
+GROUP BY symbol, timeframe, open_time
+HAVING cnt > 1
+LIMIT 20;
 ```
+
+Should return zero rows after successful imports.
 
 ### Reset import state
 

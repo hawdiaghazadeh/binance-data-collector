@@ -57,6 +57,10 @@ services:
       - ./config:/config:ro
       - ./downloads:/downloads
       - ./logs:/logs
+    deploy:
+      resources:
+        limits:
+          memory: 2G
     depends_on:
       clickhouse:
         condition: service_healthy

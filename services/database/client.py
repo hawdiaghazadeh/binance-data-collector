@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import threading
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Sequence
 
@@ -10,6 +11,7 @@ import structlog
 
 from services.database.schema import KLINES_COLUMNS, ensure_schema
 from services.shared.models import KlineRow
+from services.shared.time_utils import month_range_utc
 
 if TYPE_CHECKING:
     from services.shared.config import DatabaseConfig
@@ -22,14 +24,15 @@ class ClickHouseClient:
     Production ClickHouse client for batch kline inserts and import tracking.
 
     Uses clickhouse-connect with optional compression for high-throughput ingestion.
+    Each instance must be used from a single thread only.
     """
 
     def __init__(self, config: DatabaseConfig) -> None:
         self._config = config
         self._client: clickhouse_connect.driver.Client | None = None
 
-    def connect(self) -> None:
-        """Establish connection and ensure schema exists."""
+    def connect(self, *, ensure_schema_exists: bool = True) -> None:
+        """Establish connection and optionally ensure schema exists."""
         self._client = clickhouse_connect.get_client(
             host=self._config.host,
             port=self._config.port,
@@ -40,12 +43,13 @@ class ClickHouseClient:
             send_receive_timeout=self._config.send_receive_timeout,
             compress=self._config.compression,
         )
-        ensure_schema(
-            self._client,
-            self._config.database,
-            self._config.table,
-            self._config.import_state_table,
-        )
+        if ensure_schema_exists:
+            ensure_schema(
+                self._client,
+                self._config.database,
+                self._config.table,
+                self._config.import_state_table,
+            )
         logger.info(
             "database_connected",
             host=self._config.host,
@@ -132,6 +136,55 @@ class ClickHouseClient:
             ],
         )
 
+    def remove_file_import_state(self, file_path: str) -> None:
+        """Remove import state for a file (used on rollback)."""
+        query = f"""
+            ALTER TABLE {self.import_state_table_name} DELETE
+            WHERE file_path = {{path:String}}
+            SETTINGS mutations_sync = 1
+        """
+        self.client.command(query, parameters={"path": file_path})
+        logger.info("import_state_removed", file_path=file_path)
+
+    def delete_month_klines(
+        self,
+        symbol: str,
+        timeframe: str,
+        year: int,
+        month: int,
+    ) -> None:
+        """
+        Delete all klines for a symbol/timeframe within a calendar month.
+
+        Used before import (clean slate) and on rollback after partial failure.
+        Waits for mutation to complete (mutations_sync=1).
+        """
+        start, end = month_range_utc(year, month)
+        query = f"""
+            ALTER TABLE {self.full_table_name} DELETE
+            WHERE symbol = {{symbol:String}}
+              AND timeframe = {{timeframe:String}}
+              AND open_time >= {{start:DateTime64(3)}}
+              AND open_time < {{end:DateTime64(3)}}
+            SETTINGS mutations_sync = 1
+        """
+        self.client.command(
+            query,
+            parameters={
+                "symbol": symbol,
+                "timeframe": timeframe,
+                "start": start,
+                "end": end,
+            },
+        )
+        logger.info(
+            "month_klines_deleted",
+            symbol=symbol,
+            timeframe=timeframe,
+            year=year,
+            month=month,
+        )
+
     def get_max_open_time(self, symbol: str, timeframe: str) -> datetime | None:
         """Return the latest open_time for a symbol/timeframe pair."""
         query = f"""
@@ -166,3 +219,48 @@ class ClickHouseClient:
         query = f"SELECT count() FROM {self.full_table_name} {where}"
         result = self.client.query(query, parameters=params)
         return int(result.first_row[0])
+
+
+class ClickHouseClientPool:
+    """
+    Thread-local pool of ClickHouse clients for concurrent import workers.
+
+    clickhouse-connect does not allow concurrent queries on the same session,
+    so each worker thread gets its own client instance.
+    """
+
+    def __init__(self, config: DatabaseConfig) -> None:
+        self._config = config
+        self._local = threading.local()
+        self._schema_client: ClickHouseClient | None = None
+
+    def connect(self) -> None:
+        """Connect once from the main thread and ensure schema exists."""
+        self._schema_client = ClickHouseClient(self._config)
+        self._schema_client.connect(ensure_schema_exists=True)
+
+    def get(self) -> ClickHouseClient:
+        """Return a dedicated client for the current thread."""
+        client: ClickHouseClient | None = getattr(self._local, "client", None)
+        if client is None:
+            client = ClickHouseClient(self._config)
+            client.connect(ensure_schema_exists=False)
+            self._local.client = client
+        return client
+
+    def ping(self) -> bool:
+        if self._schema_client is None:
+            return False
+        return self._schema_client.ping()
+
+    def close(self) -> None:
+        if self._schema_client is not None:
+            self._schema_client.close()
+            self._schema_client = None
+
+        client: ClickHouseClient | None = getattr(self._local, "client", None)
+        if client is not None:
+            client.close()
+            self._local.client = None
+
+        logger.info("database_pool_closed")

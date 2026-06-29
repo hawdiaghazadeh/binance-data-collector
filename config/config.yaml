@@ -63,12 +63,15 @@ downloader:
   chunk_size_bytes: 1048576  # 1 MB
 
 importer:
-  max_workers: 4
-  batch_size: 50000
+  max_workers: 1
+  batch_size: 25000
   retry_count: 3
   retry_backoff_seconds: 2.0
   delete_after_import: false
   validate_gaps: true
+  serial_import: true
+  strict_validation: true
+  rollback_on_failure: true
 
 logging:
   level: "INFO"
