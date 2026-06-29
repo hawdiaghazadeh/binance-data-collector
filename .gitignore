@@ -1,0 +1,17 @@
+downloads/
+logs/
+*.pyc
+__pycache__/
+.pytest_cache/
+.coverage
+htmlcov/
+.env
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+downloads/**/*
+!downloads/.gitkeep
+logs/**/*
+!logs/.gitkeep
