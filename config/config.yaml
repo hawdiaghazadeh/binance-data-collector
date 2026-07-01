@@ -8,16 +8,145 @@ binance:
   user_agent: "crypto-pipeline/1.0"
 
 symbols:
+  # Major L1 / blue chips
+  
   - BTCUSDT
-  - ETHUSDT
-  - BNBUSDT
-  - SOLUSDT
-  - XRPUSDT
-  - DOGEUSDT
-  - ADAUSDT
-  - LINKUSDT
-  - AVAXUSDT
-  - SUIUSDT
+  # - ETHUSDT
+  # - BNBUSDT
+  # - SOLUSDT
+  # - XRPUSDT
+  # - DOGEUSDT
+  # - ADAUSDT
+  # - AVAXUSDT
+  # - TRXUSDT
+  # - DOTUSDT
+  # - LINKUSDT
+  # - BCHUSDT
+  # - LTCUSDT
+  # - NEARUSDT
+  # - ATOMUSDT
+  # - APTUSDT
+  # - SUIUSDT
+  # - SEIUSDT
+  # - TIAUSDT
+  # - INJUSDT
+  # - FILUSDT
+  # - ICPUSDT
+  # - ETCUSDT
+  # - XLMUSDT
+  # - ALGOUSDT
+  # - HBARUSDT
+  # - EGLDUSDT
+  # - STXUSDT
+  # - VETUSDT
+  # - KASUSDT
+  # - HYPEUSDT
+  # - TAOUSDT
+  # - ZECUSDT
+  # - DASHUSDT
+
+
+  # L2 / scaling
+
+  # - ARBUSDT
+  # - OPUSDT
+  # - STRKUSDT
+  # - POLUSDT
+  # - IMXUSDT
+  # - MANTAUSDT
+  # - ZKUSDT
+  # - ZROUSDT
+
+
+  # DeFi
+
+  # - UNIUSDT
+  # - AAVEUSDT
+  # - CRVUSDT
+  # - SNXUSDT
+  # - COMPUSDT
+  # - LDOUSDT
+  # - PENDLEUSDT
+  # - RUNEUSDT
+  # - DYDXUSDT
+  # - CAKEUSDT
+  # - 1INCHUSDT
+  # - SUSHIUSDT
+  # - YFIUSDT
+  # - LQTYUSDT
+  # - EIGENUSDT
+  # - ETHFIUSDT
+
+
+  # AI / data
+
+  # - FETUSDT
+  # - RENDERUSDT
+  # - WLDUSDT
+  # - ARKMUSDT
+  # - PYTHUSDT
+
+
+  # Gaming / metaverse / NFT
+
+  # - SANDUSDT
+  # - MANAUSDT
+  # - AXSUSDT
+  # - GALAUSDT
+  # - ENJUSDT
+  # - APEUSDT
+  # - ILVUSDT
+  # - MAGICUSDT
+  # - GMTUSDT
+  # - BLURUSDT
+  # - PIXELUSDT
+  # - PORTALUSDT
+
+
+  # Meme
+
+  # - 1000PEPEUSDT
+  # - 1000SHIBUSDT
+  # - WIFUSDT
+  # - 1000BONKUSDT
+  # - 1000FLOKIUSDT
+  # - BOMEUSDT
+  # - TRUMPUSDT
+  # - 1000SATSUSDT
+  # - PEOPLEUSDT
+
+
+
+  # Mid-cap / ecosystem
+
+  # - ENAUSDT
+  # - JUPUSDT
+  # - JTOUSDT
+  # - ONDOUSDT
+  # - ORDIUSDT
+  # - NOTUSDT
+  # - WOOUSDT
+  # - ARUSDT
+  # - ROSEUSDT
+  # - CFXUSDT
+  # - CHZUSDT
+  # - THETAUSDT
+  # - XTZUSDT
+  # - FLOWUSDT
+  # - KAVAUSDT
+  # - GRTUSDT
+  # - ENSUSDT
+  # - MASKUSDT
+  # - SSVUSDT
+  # - EDUUSDT
+  # - IDUSDT
+  # - ACEUSDT
+  # - AEVOUSDT
+  # - BBUSDT
+  # - LISTAUSDT
+  # - REZUSDT
+  # - 1000LUNCUSDT
+  # - LUNA2USDT
 
 timeframes:
   - 1m

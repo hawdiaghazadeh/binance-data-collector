@@ -5,7 +5,6 @@
 1. **Separation of concerns** — Downloader and importer are independent services with single responsibilities.
 2. **Configuration-driven** — All symbols, timeframes, and runtime parameters come from YAML.
 3. **Resumable** — Both services can restart without re-processing completed work.
-4. **Extensible** — New services connect to ClickHouse via the shared `database` module.
 
 ## Service Boundaries
 
@@ -25,12 +24,17 @@ services/
 4. CSV extracted in memory (never written to disk).
 5. Rows validated and batch-inserted into ClickHouse.
 6. Import state recorded in `import_state` table.
+7. Grafana queries ClickHouse for charts, coverage tables, and data-quality checks.
 
-## Extension Points
+## Observability
 
-| Future Service | Integration Point                          |
-|----------------|--------------------------------------------|
-| Scanner        | Query `crypto.klines` via `ClickHouseClient` |
-| Backtester     | Query `crypto.klines`, add `backtest_results` table |
-| REST API       | Wrap `ClickHouseClient` in FastAPI routes  |
-| WebSocket      | Subscribe to live feeds, write to ClickHouse |
+```
+docker/grafana/
+├── provisioning/
+│   ├── datasources/clickhouse.yaml   # Auto-configured ClickHouse connection
+│   └── dashboards/default.yaml       # Dashboard file provider
+└── dashboards/
+    ├── crypto-overview.json
+    ├── crypto-charts.json
+    └── crypto-data-quality.json
+```

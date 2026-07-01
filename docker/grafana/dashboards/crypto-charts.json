@@ -1,0 +1,235 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-crypto" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi", "sort": "none" } },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-crypto" },
+          "editorType": "sql",
+          "queryType": "timeseries",
+          "rawSql": "SELECT open_time AS time, open, high, low, close FROM crypto.klines WHERE symbol = ${symbol:singlequote} AND timeframe = ${timeframe:singlequote} AND $__timeFilter_ms(open_time) ORDER BY time",
+          "refId": "A"
+        }
+      ],
+      "title": "OHLC — $symbol ($timeframe)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-crypto" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "bars",
+            "fillOpacity": 50,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "id": 2,
+      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "single", "sort": "none" } },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-crypto" },
+          "editorType": "sql",
+          "queryType": "timeseries",
+          "rawSql": "SELECT open_time AS time, volume FROM crypto.klines WHERE symbol = ${symbol:singlequote} AND timeframe = ${timeframe:singlequote} AND $__timeFilter_ms(open_time) ORDER BY time",
+          "refId": "A"
+        }
+      ],
+      "title": "Volume",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-crypto" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "currencyUSD"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "id": 3,
+      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "single", "sort": "none" } },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-crypto" },
+          "editorType": "sql",
+          "queryType": "timeseries",
+          "rawSql": "SELECT open_time AS time, quote_volume FROM crypto.klines WHERE symbol = ${symbol:singlequote} AND timeframe = ${timeframe:singlequote} AND $__timeFilter_ms(open_time) ORDER BY time",
+          "refId": "A"
+        }
+      ],
+      "title": "Quote Volume (USDT)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-crypto" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": { "legend": false, "tooltip": false, "viz": false },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": { "type": "linear" },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": { "group": "A", "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 20 },
+      "id": 4,
+      "options": { "legend": { "calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "single", "sort": "none" } },
+      "targets": [
+        {
+          "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-crypto" },
+          "editorType": "sql",
+          "queryType": "timeseries",
+          "rawSql": "SELECT open_time AS time, trade_count FROM crypto.klines WHERE symbol = ${symbol:singlequote} AND timeframe = ${timeframe:singlequote} AND $__timeFilter_ms(open_time) ORDER BY time",
+          "refId": "A"
+        }
+      ],
+      "title": "Trade Count",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 39,
+  "tags": ["crypto", "charts"],
+  "templating": {
+    "list": [
+      {
+        "current": { "selected": false, "text": "BTCUSDT", "value": "BTCUSDT" },
+        "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-crypto" },
+        "definition": "SELECT DISTINCT symbol FROM crypto.klines ORDER BY symbol",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Symbol",
+        "multi": false,
+        "name": "symbol",
+        "options": [],
+        "query": "SELECT DISTINCT symbol FROM crypto.klines ORDER BY symbol",
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": { "selected": false, "text": "1h", "value": "1h" },
+        "datasource": { "type": "grafana-clickhouse-datasource", "uid": "clickhouse-crypto" },
+        "definition": "SELECT DISTINCT timeframe FROM crypto.klines WHERE symbol = ${symbol:singlequote} ORDER BY timeframe",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Timeframe",
+        "multi": false,
+        "name": "timeframe",
+        "options": [],
+        "query": "SELECT DISTINCT timeframe FROM crypto.klines WHERE symbol = ${symbol:singlequote} ORDER BY timeframe",
+        "refresh": 2,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": { "from": "now-5y", "to": "now" },
+  "timepicker": { "refresh_intervals": ["5s", "10s", "30s", "1m", "5m"] },
+  "timezone": "utc",
+  "title": "Crypto Price Charts",
+  "uid": "crypto-charts",
+  "version": 2
+}

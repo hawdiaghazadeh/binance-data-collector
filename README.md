@@ -1,6 +1,6 @@
 # Crypto Historical Data Pipeline
 
-Production-grade pipeline for downloading Binance USDT-M futures kline data from [Binance Vision](https://data.binance.vision) and importing it into ClickHouse for backtesting, strategy optimization, SMC/ICT detection, scanners, signal generation, and machine learning.
+Production-grade pipeline for downloading Binance USDT-M futures kline data from [Binance Vision](https://data.binance.vision) and importing it into ClickHouse.
 
 ## Architecture
 
@@ -13,6 +13,11 @@ Production-grade pipeline for downloading Binance USDT-M futures kline data from
                                           ┌──────▼──────┐
                                           │ ClickHouse  │
                                           │   klines    │
+                                          └──────┬──────┘
+                                                 │
+                                          ┌──────▼──────┐
+                                          │   Grafana   │
+                                          │  dashboards │
                                           └─────────────┘
 ```
 
@@ -21,8 +26,7 @@ Production-grade pipeline for downloading Binance USDT-M futures kline data from
 | `downloader`| Download monthly ZIP files from Binance   |
 | `importer`  | Parse ZIPs in memory, batch insert to DB|
 | `clickhouse`| Time-series storage with partitioning     |
-
-Future services (`scanner`, `backtester`, `api`, `websocket`) plug into the same Docker network and ClickHouse database without architectural changes.
+| `grafana`   | Charts, data overview, quality monitoring |
 
 ## Project Structure
 
@@ -31,6 +35,7 @@ Future services (`scanner`, `backtester`, `api`, `websocket`) plug into the same
 │   └── config.yaml          # All runtime configuration
 ├── docker/
 │   ├── clickhouse/init/     # Schema initialization SQL
+│   ├── grafana/             # Grafana provisioning & dashboards
 │   ├── downloader/Dockerfile
 │   └── importer/Dockerfile
 ├── services/
@@ -63,13 +68,16 @@ cp .env.example .env
 # 3. Start ClickHouse
 docker compose up -d clickhouse
 
-# 4. Run downloader
+# 4. Start Grafana (optional — for charts and data monitoring)
+docker compose up -d grafana
+
+# 5. Run downloader
 docker compose --profile download up downloader
 
-# 5. Run importer
+# 6. Run importer
 docker compose --profile import up importer
 
-# 6. Run full pipeline (downloader first, then importer)
+# 7. Run full pipeline (downloader first, then importer)
 docker compose --profile pipeline up
 ```
 
@@ -79,6 +87,33 @@ The `pipeline` profile runs services in order: **ClickHouse → Downloader → I
 # Import only (skip downloader — use when ZIPs already exist)
 docker compose --profile import up importer
 ```
+
+## Grafana
+
+Grafana connects to ClickHouse automatically and loads pre-built dashboards in the **Crypto** folder.
+
+```bash
+# Start ClickHouse + Grafana
+docker compose up -d clickhouse grafana
+```
+
+Open [http://localhost:3080](http://localhost:3080) (default login: `admin` / `admin`).
+
+| Dashboard            | Purpose                                              |
+|----------------------|------------------------------------------------------|
+| Crypto Data Overview | Row counts, coverage per symbol/timeframe, imports   |
+| Crypto Price Charts  | OHLC, volume, quote volume — filter by symbol & TF    |
+| Crypto Data Quality  | Duplicates, invalid OHLC, import history             |
+
+Override credentials via `.env`:
+
+```bash
+GRAFANA_PORT=3080
+GRAFANA_ADMIN_USER=admin
+GRAFANA_ADMIN_PASSWORD=your-secure-password
+```
+
+Dashboards and datasource config live in `docker/grafana/`. Edit JSON files there and restart Grafana to apply changes.
 
 ## Local Development
 
@@ -361,18 +396,6 @@ importer:
   max_workers: 8
   batch_size: 100000
 ```
-
-## Future Extensions
-
-The architecture supports adding these services via Docker Compose profiles:
-
-- **scanner** — SMC/ICT, RTM pattern detection
-- **backtester** — Strategy backtesting engine
-- **api** — REST API for data access
-- **websocket** — Real-time candle updates
-- **telegram** — Alert bot
-
-Each service reads from the same ClickHouse `crypto.klines` table.
 
 ## License
 
