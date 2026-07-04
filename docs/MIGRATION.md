@@ -265,6 +265,17 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase15/test_rl_core.py`
 - **Rollback:** Remove new packages and `sac` plugin; revert three upgraded stubs; remove Phase 15 tests
 
+## Phase 16 / G21 — Evaluation Pipeline
+
+- **Frozen:** `EvaluationPipelineProtocol` v1.0
+- **Plugins:** `walk_forward`, `holdout_eval`
+- **Added:**
+  - `quant_platform/evaluation_pipelines/` — walk-forward folds, holdout split, Sharpe scoring
+  - `EvaluationPipelineBuilder` + `register_evaluation_plugins()`
+- **Changed:** `walk_forward` upgraded from static stub to rolling fold evaluation
+- **Tests:** `tests/platform/phase16/test_evaluation.py`
+- **Rollback:** Remove `quant_platform/evaluation_pipelines/` and `holdout_eval` plugin; revert `walk_forward` stub; remove Phase 16 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

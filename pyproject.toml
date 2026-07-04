@@ -115,6 +115,7 @@ standard_rl_train = "quant_platform.plugins.domain.standard_rl_train:factory"
 
 [project.entry-points."platform.evaluation_pipelines"]
 walk_forward = "quant_platform.plugins.domain.walk_forward:factory"
+holdout_eval = "quant_platform.plugins.domain.holdout_eval:factory"
 
 [project.entry-points."platform.backtesting"]
 event_driven = "quant_platform.plugins.domain.event_driven:factory"
