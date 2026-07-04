@@ -16,6 +16,7 @@ dependencies = [
     "clickhouse-connect>=0.7.0",
     "tqdm>=4.66.0",
     "structlog>=24.1.0",
+    "packaging>=24.0",
 ]
 
 [project.optional-dependencies]
@@ -26,9 +27,22 @@ dev = [
     "respx>=0.21.0",
 ]
 
+[project.entry-points."platform.data_providers"]
+binance_vision = "quant_platform.plugins.binance_vision:factory"
+
+[project.entry-points."platform.storage_backends"]
+clickhouse = "quant_platform.plugins.clickhouse:factory"
+
+[project.entry-points."platform.parsers"]
+binance_kline_csv = "quant_platform.plugins.binance_kline_parser:factory"
+
+[project.entry-points."platform.features"]
+ohlc_feature = "quant_platform.plugins.ohlc_feature:factory"
+volume_feature = "quant_platform.plugins.volume_feature:factory"
+
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["services*"]
+include = ["services*", "quant_platform*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
