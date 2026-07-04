@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 from quant_platform.core.manager import PluginManager
+from quant_platform.plugins.domain import DOMAIN_PLUGIN_MODULES
 from quant_platform.plugins.domain_reference import register_all_domain_plugins
 
 
 class TestDomainRegistries:
     def test_register_all_domain_plugins(self):
         manager = PluginManager()
-        count = register_all_domain_plugins(manager)
-        assert count >= 20
+        register_all_domain_plugins(manager)
+        domain_groups = {group for group, _ in DOMAIN_PLUGIN_MODULES}
+        registered = sum(len(manager.list_plugins(group)) for group in domain_groups)
+        assert registered == len(DOMAIN_PLUGIN_MODULES)
 
     def test_normalization_plugin(self):
         manager = PluginManager()

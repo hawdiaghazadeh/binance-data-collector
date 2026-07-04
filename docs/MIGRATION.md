@@ -287,6 +287,17 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase17/test_backtesting.py`
 - **Rollback:** Remove `quant_platform/backtesting/` and `vectorized` plugin; revert `event_driven` stub; remove Phase 17 tests
 
+## Phase 18 / G23 — Paper Trading
+
+- **Frozen:** `PaperTradingProtocol` v1.0
+- **Plugins:** `paper_engine`
+- **Added:**
+  - `quant_platform/paper_trading/` — end-to-end session (strategy → paper broker → portfolio)
+  - `PaperTradingPipelineBuilder` + `register_paper_trading_plugins()`
+- **Changed:** `paper_engine` upgraded from no-op stub to bar-driven paper session
+- **Tests:** `tests/platform/phase18/test_paper_trading.py`
+- **Rollback:** Remove `quant_platform/paper_trading/`; revert `paper_engine` stub; remove Phase 18 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

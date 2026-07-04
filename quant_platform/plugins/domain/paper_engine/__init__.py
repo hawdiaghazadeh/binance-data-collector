@@ -1,23 +1,46 @@
-"""Reference domain plugin: paper_engine."""
+"""Paper trading engine plugin (Phase 18)."""
 
 from __future__ import annotations
 
-from quant_platform.plugins.domain._helpers import attach_factory_metadata, reference_meta
+from typing import Any
 
-PLUGIN_METADATA = reference_meta("paper_engine", "platform.paper_trading")
+from quant_platform.core.plugin import PluginMetadata
+from quant_platform.paper_trading.session import PaperTradingSessionEngine
+
+PLUGIN_METADATA = PluginMetadata(
+    name="paper_engine",
+    version="1.0.0",
+    platform_version_compatibility=">=1.0.0,<2.0.0",
+    description="End-to-end paper trading session over strategy signals and paper broker fills",
+    input_types=["strategy", "klines", "bars", "portfolio_state"],
+    output_types=["paper_trading_result", "equity_curve", "portfolio_state"],
+    registry_group="platform.paper_trading",
+)
 
 
 class PaperTradingEngine:
+    def __init__(self, session: PaperTradingSessionEngine) -> None:
+        self._session = session
 
     def start(self) -> None:
-        pass
+        self._session.start()
 
-    def stop(self) -> dict:
-        return {"status": "stopped"}
-
-
-def factory(**kwargs) -> PaperTradingEngine:
-    return PaperTradingEngine()
+    def stop(self) -> dict[str, Any]:
+        return self._session.stop()
 
 
-attach_factory_metadata(factory, PLUGIN_METADATA)
+def factory(*, config: dict | None = None, **kwargs) -> PaperTradingEngine:
+    cfg = dict(config or {})
+    session = PaperTradingSessionEngine(
+        strategy=cfg.get("strategy"),
+        bars=cfg.get("bars", []),
+        symbol=str(cfg.get("symbol", "BTCUSDT")),
+        initial_cash=float(cfg.get("initial_cash", 10_000.0)),
+        fee_rate=float(cfg.get("fee_rate", 0.001)),
+        slippage_bps=float(cfg.get("slippage_bps", 5.0)),
+        risk_fraction=float(cfg.get("risk_fraction", 0.02)),
+    )
+    return PaperTradingEngine(session)
+
+
+factory.PLUGIN_METADATA = PLUGIN_METADATA  # type: ignore[attr-defined]
