@@ -201,12 +201,13 @@ class PluginManager:
 
     def batch_load(self, group: str, *, resolve_graph: bool = True) -> list[str]:
         """Phase 2B: load plugins in dependency order after compatibility checks."""
-        from quant_platform.core.compatibility import CompatibilityChecker
+        from quant_platform.core.compatibility import CompatibilityChecker, build_compatibility_context
         from quant_platform.core.dependencies import DependencyResolver
         from quant_platform.core.plugin import PluginStatus
 
         reg = self.registry(group)
-        checker = CompatibilityChecker()
+        context = build_compatibility_context(self)
+        checker = CompatibilityChecker(context=context)
         checker.enforce_registry(reg)
         resolver = DependencyResolver.from_registry(reg)
         load_order = resolver.topological_sort()

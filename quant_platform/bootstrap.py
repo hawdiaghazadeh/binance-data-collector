@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quant_platform.core.compatibility import CompatibilityChecker
+from quant_platform.core.compatibility import (
+    CompatibilityChecker,
+    build_compatibility_context,
+)
 from quant_platform.core.dependencies import DependencyResolver
 from quant_platform.core.manager import PluginManager
 from quant_platform.core.plugin import DisableReason, PluginStatus
@@ -78,7 +81,8 @@ def register_pipeline_plugins(manager: PluginManager, app_config: AppConfig) -> 
 
 def resolve_dependency_graph(manager: PluginManager) -> None:
     """Phase 2B: enforce compatibility and cascade disabled dependents."""
-    checker = CompatibilityChecker()
+    context = build_compatibility_context(manager)
+    checker = CompatibilityChecker(context=context)
     for group in PIPELINE_GROUPS:
         reg = manager.registry(group)
         checker.enforce_registry(reg)

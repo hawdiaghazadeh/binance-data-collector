@@ -75,6 +75,17 @@ class PluginMetadata(BaseModel):
             raise ValueError(f"Invalid version specifier: {v}") from exc
         return v
 
+    @field_validator("compatible_dataset_versions", "compatible_feature_versions")
+    @classmethod
+    def validate_optional_compat_spec(cls, v: str | None) -> str | None:
+        if v is None:
+            return None
+        try:
+            SpecifierSet(v)
+        except InvalidSpecifier as exc:
+            raise ValueError(f"Invalid version specifier: {v}") from exc
+        return v
+
 
 class PluginRecord(BaseModel):
     metadata: PluginMetadata

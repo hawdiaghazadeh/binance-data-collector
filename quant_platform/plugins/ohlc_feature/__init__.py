@@ -10,6 +10,7 @@ PLUGIN_METADATA = PluginMetadata(
     version="1.0.0",
     platform_version_compatibility=">=1.0.0,<2.0.0",
     description="Extract OHLC from kline data",
+    compatible_dataset_versions=">=1.0.0,<2.0.0",
     input_types=["klines"],
     output_types=["ohlc"],
     registry_group="platform.features",

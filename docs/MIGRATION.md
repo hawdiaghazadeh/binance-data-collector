@@ -85,6 +85,20 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/test_discovery_g5.py`
 - **Rollback:** Remove dynamic/reflection discovery functions; clear config lists; revert bootstrap discover loop
 
+## Compatibility Matrix (G6) — Cross-Version Enforcement
+
+- **Added:**
+  - `CompatibilityContext` — active dataset and feature versions
+  - `build_compatibility_context()` — collect versions from registered plugins
+  - `version_matches_spec()` helper
+  - Enforcement of `compatible_dataset_versions` and `compatible_feature_versions`
+- **Changed:**
+  - `CompatibilityChecker` checks platform + dataset + feature matrix at startup
+  - `resolve_dependency_graph()` and `batch_load()` use built context
+  - `ohlc_feature` declares `compatible_dataset_versions`
+- **Tests:** `tests/platform/test_compatibility_g6.py`
+- **Rollback:** Revert `compatibility.py` to platform-only checks; remove matrix fields from plugins
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
