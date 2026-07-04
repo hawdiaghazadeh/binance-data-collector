@@ -240,6 +240,18 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase13/test_exec_risk_portfolio.py`
 - **Rollback:** Remove new packages and `kelly_risk`/`multi_asset` plugins; revert three upgraded stubs; remove Phase 13 tests
 
+## Phase 14 / G19 — Exchange + Broker
+
+- **Frozen:** `ExchangeProtocol`, `BrokerProtocol` v1.0
+- **Plugins:** `binance_exchange`, `paper_broker`
+- **Added:**
+  - `quant_platform/exchanges/` — Binance REST client + kline parsing
+  - `quant_platform/brokers/` — paper broker engine
+  - `quant_platform/market_connectivity/` — `MarketConnectivityPipelineBuilder` + grouped registration
+- **Changed:** `binance_exchange` and `paper_broker` upgraded from stubs to production adapters
+- **Tests:** `tests/platform/phase14/test_market_connectivity.py`
+- **Rollback:** Remove new packages; revert exchange/broker stubs; remove Phase 14 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
