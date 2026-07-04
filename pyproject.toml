@@ -31,6 +31,7 @@ dev = [
 
 [project.scripts]
 quant-plugins = "quant_platform.marketplace.cli:main"
+quant-train = "quant_platform.rl_product.training.cli:main"
 
 [project.entry-points."platform.data_providers"]
 binance_vision = "quant_platform.plugins.binance_vision:factory"
@@ -166,6 +167,8 @@ execution_model = "quant_platform.plugins.rl.execution_model:factory"
 rl_env_spot = "quant_platform.plugins.rl.rl_env_spot:factory"
 rl_env_futures = "quant_platform.plugins.rl.rl_env_futures:factory"
 ppo_torch = "quant_platform.plugins.rl.ppo_torch:factory"
+online_training = "quant_platform.plugins.rl.online_training:factory"
+curriculum_scheduler = "quant_platform.plugins.rl.curriculum_scheduler:factory"
 
 [tool.setuptools.packages.find]
 where = ["."]

@@ -409,6 +409,16 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Dependencies:** `torch>=2.0.0` in dev optional extras
 - **Rollback:** Remove `rl_product/agent/` and `ppo_torch` plugin
 
+## Phase 23 / G35 — RL Product Training Loop
+
+- **Added:**
+  - `quant_platform/rl_product/training/` — `RewardNormalizer`, `EntropySchedule`, `AsyncRolloutCollector`, `OnlineTrainingLoop`
+  - Optional `CurriculumScheduler` + plugin `curriculum_scheduler` (config off by default)
+  - `quant-train` CLI (`quant-train train --config ...`)
+  - Plugin: `online_training`
+- **Tests:** `tests/platform/rl_product/g35/` — short train run, no runtime discovery, CLI smoke
+- **Rollback:** Remove `rl_product/training/`; remove CLI entry point and G35 plugins
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

@@ -17,6 +17,9 @@ class AgentConfig:
     gae_lambda: float = 0.95
     value_coef: float = 0.5
     entropy_coef: float = 0.01
+    entropy_coef_start: float = 0.01
+    entropy_coef_end: float = 0.001
+    entropy_coef_min: float = 0.0005
     max_grad_norm: float = 0.5
     ppo_epochs: int = 4
     action_dim: int = 1
@@ -39,6 +42,9 @@ class AgentConfig:
             gae_lambda=float(agent.get("gae_lambda", 0.95)),
             value_coef=float(agent.get("value_coef", 0.5)),
             entropy_coef=float(agent.get("entropy_coef", agent.get("entropy_coef_start", 0.01))),
+            entropy_coef_start=float(agent.get("entropy_coef_start", 0.01)),
+            entropy_coef_end=float(agent.get("entropy_coef_end", 0.001)),
+            entropy_coef_min=float(agent.get("entropy_coef_min", 0.0005)),
             max_grad_norm=float(agent.get("max_grad_norm", 0.5)),
             ppo_epochs=int(agent.get("ppo_epochs", 4)),
             action_dim=int(agent.get("action_dim", 1)),

@@ -19,4 +19,7 @@ class RolloutBatch:
 
     @property
     def batch_size(self) -> int:
-        return int(self.observations.shape[0])
+        obs = self.observations
+        if hasattr(obs, "shape"):
+            return int(obs.shape[0])
+        return len(obs)

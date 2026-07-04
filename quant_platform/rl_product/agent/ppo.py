@@ -42,6 +42,10 @@ class PPOTrainer:
     def config(self) -> AgentConfig:
         return self._config
 
+    def set_entropy_coef(self, value: float) -> None:
+        floor = self._config.entropy_coef_min
+        object.__setattr__(self._config, "entropy_coef", max(float(value), floor))
+
     def compute_advantages(self, batch: RolloutBatch) -> RolloutBatch:
         advantages, returns = compute_gae(
             batch.rewards,
