@@ -53,7 +53,16 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 ## Phase 3 — Feature Registry
 
 - **Frozen:** `FeatureProtocol` v1.0
-- **Plugins:** `ohlc_feature`, `volume_feature`
+- **Plugins:** `ohlc_feature`, `volume_feature`, `atr_feature`, `vwap_feature`
+
+## Phase 3 Extension (G3) — ATR & VWAP Features
+
+- **Added:**
+  - `quant_platform/plugins/atr_feature/` — Wilder ATR with configurable period
+  - `quant_platform/plugins/vwap_feature/` — cumulative VWAP from typical price
+- **Changed:** `register_feature_plugins()` and `pyproject.toml` entry points
+- **Tests:** extended `tests/platform/phase3/test_feature.py`
+- **Rollback:** Remove `atr_feature` and `vwap_feature` plugins and entry points
 
 ## Phases 4–21 — Domain Registries
 

@@ -32,12 +32,21 @@ class FeaturePipelineBuilder:
 
 
 def register_feature_plugins(manager: PluginManager) -> None:
+    from quant_platform.plugins.atr_feature import PLUGIN_METADATA as ATR_META
+    from quant_platform.plugins.atr_feature import factory as atr_factory
     from quant_platform.plugins.ohlc_feature import PLUGIN_METADATA as OHLC_META
     from quant_platform.plugins.ohlc_feature import factory as ohlc_factory
     from quant_platform.plugins.volume_feature import PLUGIN_METADATA as VOL_META
     from quant_platform.plugins.volume_feature import factory as vol_factory
+    from quant_platform.plugins.vwap_feature import PLUGIN_METADATA as VWAP_META
+    from quant_platform.plugins.vwap_feature import factory as vwap_factory
 
     reg = manager.registry(FEATURE_GROUP)
-    for meta, factory in [(OHLC_META, ohlc_factory), (VOL_META, vol_factory)]:
+    for meta, factory in [
+        (OHLC_META, ohlc_factory),
+        (VOL_META, vol_factory),
+        (ATR_META, atr_factory),
+        (VWAP_META, vwap_factory),
+    ]:
         if meta.name not in {m.name for m in reg.list_plugins()}:
             reg.register(meta, factory)

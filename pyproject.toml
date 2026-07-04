@@ -39,6 +39,8 @@ binance_kline_csv = "quant_platform.plugins.binance_kline_parser:factory"
 [project.entry-points."platform.features"]
 ohlc_feature = "quant_platform.plugins.ohlc_feature:factory"
 volume_feature = "quant_platform.plugins.volume_feature:factory"
+atr_feature = "quant_platform.plugins.atr_feature:factory"
+vwap_feature = "quant_platform.plugins.vwap_feature:factory"
 
 [tool.setuptools.packages.find]
 where = ["."]
