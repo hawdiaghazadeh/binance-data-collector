@@ -28,6 +28,8 @@ Production-grade pipeline for downloading Binance USDT-M futures kline data from
 | `clickhouse`| Time-series storage with partitioning     |
 | `grafana`   | Charts, data overview, quality monitoring |
 
+The platform supports a plugin-driven architecture for extensibility (features, strategies, RL, trading). See [docs/PLATFORM_ARCHITECTURE.md](docs/PLATFORM_ARCHITECTURE.md) and [docs/PLUGINS.md](docs/PLUGINS.md).
+
 ## Project Structure
 
 ```
@@ -43,6 +45,8 @@ Production-grade pipeline for downloading Binance USDT-M futures kline data from
 │   ├── downloader/          # Async download service
 │   ├── importer/            # Concurrent import service
 │   └── database/            # ClickHouse client and schema
+├── quant_platform/          # Plugin registry & extensible platform core
+├── docs/                    # Architecture, migration, plugin guides
 ├── scripts/                 # Utility scripts
 ├── tests/                   # Unit tests
 ├── downloads/               # Downloaded ZIP files (volume)
