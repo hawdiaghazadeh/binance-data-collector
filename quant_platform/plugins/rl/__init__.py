@@ -19,6 +19,9 @@ from quant_platform.plugins.rl import (
     curriculum_scheduler,
     walk_forward_rl_eval,
     ablation_eval,
+    policy_inference,
+    model_registry,
+    policy_strategy,
     price_action_observation,
     rl_env_futures,
     rl_env_spot,
@@ -59,6 +62,9 @@ RL_PLUGIN_MODULES: list[Any] = [
     curriculum_scheduler,
     walk_forward_rl_eval,
     ablation_eval,
+    policy_inference,
+    model_registry,
+    policy_strategy,
 ]
 
 RL_PLUGINS: list[tuple[PluginMetadata, Callable[..., Any]]] = [

@@ -428,6 +428,15 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/rl_product/g36/` — walk-forward folds, ablation structure, leakage checks, deterministic replay
 - **Rollback:** Remove `rl_product/evaluation/` and G36 plugins
 
+## Phase 25 / G37 — RL Product Deploy
+
+- **Added:**
+  - `quant_platform/rl_product/inference/` — `PolicyInferenceEngine`, `ModelRegistry`, `PolicyStrategy`
+  - Graph schema hash parity on checkpoint load
+  - Plugins: `policy_inference`, `model_registry`, `policy_strategy` (+ `platform.strategies` entry)
+- **Tests:** `tests/platform/rl_product/g37/` — hash parity, strategy on_bar, backtest hook
+- **Rollback:** Remove `rl_product/inference/` and G37 plugins; remove `policy_strategy` from `platform.strategies`
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
