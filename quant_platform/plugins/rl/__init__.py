@@ -8,12 +8,15 @@ from quant_platform.core.manager import PluginManager
 from quant_platform.core.plugin import PluginMetadata
 from quant_platform.plugins.rl import (
     episode_cache,
+    execution_model,
     feature_gate,
     ict_killzone_prob,
     ict_premium_discount_prob,
     ict_session_prob,
     perception_compressor,
     price_action_observation,
+    rl_env_futures,
+    rl_env_spot,
     rtm_compression_prob,
     rtm_flip_prob,
     rtm_sd_strength,
@@ -43,6 +46,9 @@ RL_PLUGIN_MODULES: list[Any] = [
     perception_compressor,
     feature_gate,
     price_action_observation,
+    execution_model,
+    rl_env_spot,
+    rl_env_futures,
 ]
 
 RL_PLUGINS: list[tuple[PluginMetadata, Callable[..., Any]]] = [

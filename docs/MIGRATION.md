@@ -390,6 +390,16 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/rl_product/g32/` — budget validator, master_gate=0 zeros context
 - **Rollback:** Remove `rl_product/observation/` and G32 plugin entry point
 
+## Phase 23 / G33 — RL Product Environment
+
+- **Added:**
+  - `quant_platform/rl_product/env/` — `ExecutionModelProtocol`, `SimpleExecutionModel`, `PortfolioTracker`, `RewardEngine`, `RLEnvironmentBridge`, `GymnasiumRLEnv`
+  - `RLProductGraph.compile()` — frozen PERCEPTION → OBSERVATION → REWARD handlers
+  - Plugins: `execution_model`, `rl_env_spot`, `rl_env_futures`
+- **Changed:** `RLProductGraph` expanded from schema-hash stub to full phase wiring
+- **Tests:** `tests/platform/rl_product/g33/` — slippage, PnL-dominant reward, env bridge, gymnasium wrapper
+- **Rollback:** Remove `rl_product/env/`; revert graph expansion; remove G33 plugins
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
