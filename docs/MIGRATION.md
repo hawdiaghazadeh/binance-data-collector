@@ -226,6 +226,20 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase12/test_strategy.py`
 - **Rollback:** Remove `quant_platform/strategies/` and `smc_ict` plugin; revert `rule_based` stub; remove Phase 12 tests
 
+## Phase 13 / G18 — Execution + Risk + Portfolio
+
+- **Frozen:** `ExecutionProtocol`, `RiskProtocol`, `PortfolioProtocol` v1.0
+- **Plugins:** `simulation_execution`, `fixed_risk`, `kelly_risk`, `single_asset`, `multi_asset`
+- **Added:**
+  - `quant_platform/executions/` — simulated fills with slippage/fees
+  - `quant_platform/risks/` — fixed fractional + Kelly criterion sizing
+  - `quant_platform/portfolios/` — single- and multi-asset portfolio engines
+  - `quant_platform/order_flow/` — `OrderFlowPipelineBuilder` + grouped registration
+  - Weighted composition via existing `CompositeRisk`
+- **Changed:** `simulation_execution`, `fixed_risk`, `single_asset` upgraded from stubs
+- **Tests:** `tests/platform/phase13/test_exec_risk_portfolio.py`
+- **Rollback:** Remove new packages and `kelly_risk`/`multi_asset` plugins; revert three upgraded stubs; remove Phase 13 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

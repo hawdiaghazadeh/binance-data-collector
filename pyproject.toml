@@ -91,9 +91,11 @@ simulation_execution = "quant_platform.plugins.domain.simulation_execution:facto
 
 [project.entry-points."platform.risks"]
 fixed_risk = "quant_platform.plugins.domain.fixed_risk:factory"
+kelly_risk = "quant_platform.plugins.domain.kelly_risk:factory"
 
 [project.entry-points."platform.portfolios"]
 single_asset = "quant_platform.plugins.domain.single_asset:factory"
+multi_asset = "quant_platform.plugins.domain.multi_asset:factory"
 
 [project.entry-points."platform.exchanges"]
 binance_exchange = "quant_platform.plugins.domain.binance_exchange:factory"
