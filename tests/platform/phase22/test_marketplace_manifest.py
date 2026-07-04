@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from quant_platform.core.manager import PluginManager
 from quant_platform.core.registry import BaseRegistry
 from quant_platform.marketplace.cli import main

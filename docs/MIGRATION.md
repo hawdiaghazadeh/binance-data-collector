@@ -351,6 +351,15 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase22/test_marketplace_manifest.py` + fixture `plugin.yaml`
 - **Rollback:** Remove manifest modules; revert install service changes; remove manifest tests
 
+## Phase 22 / G29 — Hot Reload
+
+- **Added:**
+  - `quant_platform/marketplace/reload.py` — sync plugin enable/disable from config, rebuild `PipelineRuntime` graph
+  - `quant-plugins reload` CLI command
+  - Clears cached singleton/scoped instances before re-materializing pipeline plugins
+- **Tests:** `tests/platform/phase22/test_marketplace_reload.py`
+- **Rollback:** Remove reload module; revert CLI reload command; remove reload tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

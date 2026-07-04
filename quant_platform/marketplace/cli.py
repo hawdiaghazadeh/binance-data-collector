@@ -9,6 +9,7 @@ from pathlib import Path
 from quant_platform.core.manager import PluginManager
 from quant_platform.marketplace.config_store import PluginConfigStore
 from quant_platform.marketplace.pip_runner import MarketplaceError
+from quant_platform.marketplace.reload import reload_from_config_path
 from quant_platform.marketplace.service import MarketplaceService
 from quant_platform.marketplace.state import InstalledPluginStore
 from quant_platform.registries.groups import ALL_REGISTRY_GROUPS
@@ -87,6 +88,13 @@ def main(argv: list[str] | None = None) -> int:
     inspect_parser = subparsers.add_parser("inspect", help="Show plugin.yaml manifest for a package")
     inspect_parser.add_argument("package", help="Python package containing plugin.yaml")
 
+    reload_parser = subparsers.add_parser("reload", help="Reload config and rebuild pipeline execution graph")
+    reload_parser.add_argument(
+        "--runtime-bootstrap",
+        action="store_true",
+        help="Bootstrap a fresh runtime from config instead of requiring an existing runtime",
+    )
+
     args = parser.parse_args(argv)
     service = build_service(config_path=args.config, state_path=args.state)
 
@@ -138,6 +146,22 @@ def main(argv: list[str] | None = None) -> int:
                 print("entry_point_mismatches:")
                 for item in inspection.entry_point_mismatches:
                     print(f"  - {item}")
+            return 0
+
+        if args.command == "reload":
+            runtime = None
+            if not args.runtime_bootstrap:
+                from quant_platform.bootstrap import bootstrap_pipeline
+                from services.shared.config import load_config
+
+                runtime = bootstrap_pipeline(load_config(args.config))
+            rebuilt, result = reload_from_config_path(args.config, runtime=runtime)
+            rebuilt.shutdown()
+            print(
+                f"reloaded {result.config_path}: "
+                f"enabled={result.plugins_enabled} disabled={result.plugins_disabled} "
+                f"graph_steps={result.graph_steps}"
+            )
             return 0
     except MarketplaceError as exc:
         print(f"error: {exc}", file=sys.stderr)
