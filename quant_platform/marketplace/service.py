@@ -13,6 +13,12 @@ from quant_platform.core.manager import PluginManager
 from quant_platform.core.plugin import DisableReason, PluginMetadata, PluginStatus
 from quant_platform.core.registry import RegistryError
 from quant_platform.marketplace.config_store import PluginConfigStore
+from quant_platform.marketplace.discovery import (
+    discover_installed_entry_points,
+    register_plugins_from_manifest,
+    verify_manifest_entry_points,
+)
+from quant_platform.marketplace.manifest import PluginManifest, load_plugin_manifest_from_package
 from quant_platform.marketplace.pip_runner import MarketplaceError, PipRunner, PipRunnerProtocol
 from quant_platform.marketplace.state import InstalledPlugin, InstalledPluginStore
 from quant_platform.registries.groups import ALL_REGISTRY_GROUPS
@@ -22,6 +28,14 @@ from quant_platform.registries.groups import ALL_REGISTRY_GROUPS
 class InstallResult:
     package: str
     installed: list[InstalledPlugin]
+    manifest: PluginManifest | None = None
+
+
+@dataclass(frozen=True)
+class ManifestInspection:
+    package: str
+    manifest: PluginManifest
+    entry_point_mismatches: list[str]
 
 
 @dataclass(frozen=True)
@@ -89,15 +103,37 @@ class MarketplaceService:
                 )
         return listings
 
+    def inspect_package(self, package: str) -> ManifestInspection:
+        manifest = load_plugin_manifest_from_package(package)
+        if manifest is None:
+            raise MarketplaceError(f"No plugin.yaml manifest found for package '{package}'")
+        mismatches = verify_manifest_entry_points(manifest)
+        return ManifestInspection(package=package, manifest=manifest, entry_point_mismatches=mismatches)
+
     def install(self, package: str, *, group: str | None = None) -> InstallResult:
         before = _snapshot(self._manager)
         self._pip.install(package)
-        groups = [group] if group else list(ALL_REGISTRY_GROUPS)
+        manifest = load_plugin_manifest_from_package(package) if "." in package and not package.startswith(".") else None
+        groups = [group] if group else (manifest.groups() if manifest else list(ALL_REGISTRY_GROUPS))
         dynamic_modules = [package] if "." in package and not package.startswith(".") else []
         checker = CompatibilityChecker()
         installed: list[InstalledPlugin] = []
+
+        if manifest is not None:
+            register_plugins_from_manifest(self._manager, manifest, groups=groups)
+            mismatches = verify_manifest_entry_points(manifest)
+            if mismatches and group is None:
+                raise MarketplaceError(
+                    "plugin.yaml entry_points do not match installed pip metadata: "
+                    + "; ".join(mismatches)
+                )
+        else:
+            for registry_group in groups:
+                self._manager.discover(registry_group, dynamic_modules=dynamic_modules)
+
+        discover_installed_entry_points(self._manager, groups=groups)
+
         for registry_group in groups:
-            self._manager.discover(registry_group, dynamic_modules=dynamic_modules)
             reg = self._manager.registry(registry_group)
             checker.enforce_registry(reg)
             for meta in reg.list_plugins():
@@ -116,7 +152,7 @@ class MarketplaceService:
                 installed.append(entry)
         if not installed:
             raise MarketplaceError(f"No new plugins discovered after installing {package}")
-        return InstallResult(package=package, installed=installed)
+        return InstallResult(package=package, installed=installed, manifest=manifest)
 
     def enable(self, group: str, name: str, *, persist: bool = True) -> None:
         reg = self._manager.registry(group)
@@ -141,7 +177,12 @@ class MarketplaceService:
             raise MarketplaceError(f"No installed package tracked for {group}:{name}")
         self._pip.upgrade(package)
         dynamic_modules = [package] if "." in package and not package.startswith(".") else []
-        self._manager.discover(group, dynamic_modules=dynamic_modules)
+        manifest = load_plugin_manifest_from_package(package)
+        if manifest is not None:
+            register_plugins_from_manifest(self._manager, manifest, groups=[group])
+        else:
+            self._manager.discover(group, dynamic_modules=dynamic_modules)
+        discover_installed_entry_points(self._manager, groups=[group])
         CompatibilityChecker().enforce_registry(reg)
         new_record = reg.get_record(name)
         new_version = new_record.metadata.version

@@ -84,6 +84,9 @@ def main(argv: list[str] | None = None) -> int:
         help="Unregister only; do not pip uninstall",
     )
 
+    inspect_parser = subparsers.add_parser("inspect", help="Show plugin.yaml manifest for a package")
+    inspect_parser.add_argument("package", help="Python package containing plugin.yaml")
+
     args = parser.parse_args(argv)
     service = build_service(config_path=args.config, state_path=args.state)
 
@@ -119,6 +122,22 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "remove":
             service.remove(args.group, args.name, uninstall_package=not args.keep_package)
             print(f"removed {args.group}:{args.name}")
+            return 0
+
+        if args.command == "inspect":
+            inspection = service.inspect_package(args.package)
+            manifest = inspection.manifest
+            print(f"name: {manifest.name}")
+            print(f"version: {manifest.version}")
+            print(f"group: {manifest.registry_group}")
+            print(f"package: {manifest.package}")
+            for registry_group, plugins in manifest.entry_points.items():
+                for name, target in plugins.items():
+                    print(f"entry_point: {registry_group}:{name} -> {target}")
+            if inspection.entry_point_mismatches:
+                print("entry_point_mismatches:")
+                for item in inspection.entry_point_mismatches:
+                    print(f"  - {item}")
             return 0
     except MarketplaceError as exc:
         print(f"error: {exc}", file=sys.stderr)

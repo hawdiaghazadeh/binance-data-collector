@@ -1,0 +1,10 @@
+name: marketplace_feature
+version: "1.0.0"
+registry_group: platform.test.marketplace
+platform_version_compatibility: ">=1.0.0,<2.0.0"
+description: Plugin used by marketplace manifest tests
+package: tests.platform.fixtures.marketplace_plugin
+factory: factory
+entry_points:
+  platform.test.marketplace:
+    marketplace_feature: tests.platform.fixtures.marketplace_plugin:factory

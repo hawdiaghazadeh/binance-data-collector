@@ -341,6 +341,16 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase22/test_marketplace_cli.py`
 - **Rollback:** Remove `quant_platform/marketplace/`; remove CLI entry point; remove Phase 22 tests
 
+## Phase 22 / G28 — Plugin Manifest
+
+- **Added:**
+  - `plugin.yaml` manifest loader (`quant_platform/marketplace/manifest.py`)
+  - Manifest-driven registration + setuptools entry-point cross-check (`marketplace/discovery.py`)
+  - `quant-plugins inspect` CLI command
+  - Install/update paths prefer manifest registration before pip entry-point discovery
+- **Tests:** `tests/platform/phase22/test_marketplace_manifest.py` + fixture `plugin.yaml`
+- **Rollback:** Remove manifest modules; revert install service changes; remove manifest tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
