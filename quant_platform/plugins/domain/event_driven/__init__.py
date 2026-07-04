@@ -1,22 +1,53 @@
-"""Reference domain plugin: event_driven."""
+"""Event-driven backtesting plugin (Phase 17)."""
 
 from __future__ import annotations
 
 from typing import Any
 
-from quant_platform.plugins.domain._helpers import attach_factory_metadata, reference_meta
+from quant_platform.backtesting.event_driven import run_event_driven_backtest
+from quant_platform.core.plugin import PluginMetadata
 
-PLUGIN_METADATA = reference_meta("event_driven", "platform.backtesting")
+PLUGIN_METADATA = PluginMetadata(
+    name="event_driven",
+    version="1.0.0",
+    platform_version_compatibility=">=1.0.0,<2.0.0",
+    description="Bar-by-bar event-driven backtest over strategy signals",
+    input_types=["strategy", "klines", "bars"],
+    output_types=["backtest_result", "equity_curve"],
+    registry_group="platform.backtesting",
+)
 
 
 class EventDrivenBacktest:
+    def __init__(
+        self,
+        *,
+        initial_cash: float = 10_000.0,
+        fee_rate: float = 0.001,
+    ) -> None:
+        self._initial_cash = initial_cash
+        self._fee_rate = fee_rate
 
-    def run(self, strategy: Any, data: Any) -> dict:
-        return {"pnl": 0.0, "trades": 0}
+    def run(self, strategy: Any, data: Any) -> dict[str, Any]:
+        return run_event_driven_backtest(
+            strategy,
+            data,
+            initial_cash=self._initial_cash,
+            fee_rate=self._fee_rate,
+        )
 
 
-def factory(**kwargs) -> EventDrivenBacktest:
-    return EventDrivenBacktest()
+def factory(
+    *,
+    initial_cash: float = 10_000.0,
+    fee_rate: float = 0.001,
+    config: dict | None = None,
+    **kwargs,
+) -> EventDrivenBacktest:
+    if config:
+        initial_cash = float(config.get("initial_cash", initial_cash))
+        fee_rate = float(config.get("fee_rate", fee_rate))
+    return EventDrivenBacktest(initial_cash=initial_cash, fee_rate=fee_rate)
 
 
-attach_factory_metadata(factory, PLUGIN_METADATA)
+factory.PLUGIN_METADATA = PLUGIN_METADATA  # type: ignore[attr-defined]

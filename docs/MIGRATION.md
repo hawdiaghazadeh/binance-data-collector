@@ -276,6 +276,17 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase16/test_evaluation.py`
 - **Rollback:** Remove `quant_platform/evaluation_pipelines/` and `holdout_eval` plugin; revert `walk_forward` stub; remove Phase 16 tests
 
+## Phase 17 / G22 — Backtesting
+
+- **Frozen:** `BacktestingProtocol` v1.0
+- **Plugins:** `event_driven`, `vectorized`
+- **Added:**
+  - `quant_platform/backtesting/` — event-driven bar loop + vectorized weight engine
+  - `BacktestPipelineBuilder` + `register_backtesting_plugins()`
+- **Changed:** `event_driven` upgraded from static stub to strategy-driven simulation
+- **Tests:** `tests/platform/phase17/test_backtesting.py`
+- **Rollback:** Remove `quant_platform/backtesting/` and `vectorized` plugin; revert `event_driven` stub; remove Phase 17 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

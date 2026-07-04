@@ -119,6 +119,7 @@ holdout_eval = "quant_platform.plugins.domain.holdout_eval:factory"
 
 [project.entry-points."platform.backtesting"]
 event_driven = "quant_platform.plugins.domain.event_driven:factory"
+vectorized = "quant_platform.plugins.domain.vectorized:factory"
 
 [project.entry-points."platform.paper_trading"]
 paper_engine = "quant_platform.plugins.domain.paper_engine:factory"

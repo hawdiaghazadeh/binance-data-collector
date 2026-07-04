@@ -48,6 +48,7 @@ from . import (
     structlog_monitoring,
     symbol_normalizer,
     uniform_buffer,
+    vectorized,
     walk_forward,
     z_score,
 )
@@ -91,6 +92,7 @@ DOMAIN_PLUGIN_MODULES: list[tuple[str, Any]] = [
     ("platform.evaluation_pipelines", walk_forward),
     ("platform.evaluation_pipelines", holdout_eval),
     ("platform.backtesting", event_driven),
+    ("platform.backtesting", vectorized),
     ("platform.paper_trading", paper_engine),
     ("platform.live_trading", live_engine),
     ("platform.visualizations", equity_curve),
