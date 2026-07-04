@@ -25,6 +25,7 @@ from quant_platform.registries.pipeline import (
     PARSER_GROUP,
     STORAGE_BACKEND_GROUP,
 )
+from quant_platform.runtime import PipelineRuntime, materialize_runtime
 
 if TYPE_CHECKING:
     from services.shared.config import AppConfig
@@ -39,6 +40,15 @@ PIPELINE_GROUPS = (
 
 def create_plugin_manager(app_config: AppConfig) -> PluginManager:
     return PluginManager.from_app_config(app_config)
+
+
+def _resolve_graph_enabled(app_config: AppConfig, override: bool | None) -> bool:
+    if override is not None:
+        return override
+    plugins = getattr(app_config, "plugins", None)
+    if plugins is None:
+        return True
+    return getattr(plugins, "resolve_graph", True)
 
 
 def register_pipeline_plugins(manager: PluginManager, app_config: AppConfig) -> None:
@@ -78,14 +88,27 @@ def resolve_dependency_graph(manager: PluginManager) -> None:
             reg.set_status(name, PluginStatus.DISABLED, disable_reason=reason)
 
 
-def bootstrap_pipeline(app_config: AppConfig, *, resolve_graph: bool = False) -> PluginManager:
+def load_pipeline_plugins(manager: PluginManager, *, resolve_graph: bool) -> None:
+    """Batch-load pipeline plugins in dependency order after optional graph resolution."""
+    if resolve_graph:
+        resolve_dependency_graph(manager)
+    for group in PIPELINE_GROUPS:
+        manager.batch_load(group, resolve_graph=resolve_graph)
+
+
+def bootstrap_pipeline(
+    app_config: AppConfig,
+    *,
+    resolve_graph: bool | None = None,
+) -> PipelineRuntime:
+    """Discover, register, resolve, and compile the pipeline for runtime execution."""
+    graph_enabled = _resolve_graph_enabled(app_config, resolve_graph)
     manager = create_plugin_manager(app_config)
     for group in (DATA_PROVIDER_GROUP, STORAGE_BACKEND_GROUP, PARSER_GROUP):
         manager.discover(group)
     register_pipeline_plugins(manager, app_config)
-    if resolve_graph:
-        resolve_dependency_graph(manager)
-    return manager
+    load_pipeline_plugins(manager, resolve_graph=graph_enabled)
+    return materialize_runtime(manager)
 
 
 def get_data_provider(manager: PluginManager, app_config: AppConfig) -> BinanceVisionDataProvider:

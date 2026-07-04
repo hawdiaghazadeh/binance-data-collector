@@ -13,7 +13,8 @@ from quant_platform.core.discovery import (
     discover_package_plugins,
     flush_pending,
 )
-from quant_platform.core.plugin import DisableReason, PluginMetadata, PluginStatus
+from quant_platform.core.instances import InstanceManager
+from quant_platform.core.plugin import DisableReason, PluginLifecycle, PluginMetadata, PluginStatus
 from quant_platform.core.registry import BaseRegistry, PluginUnavailableError, RegistryError
 
 
@@ -37,6 +38,14 @@ class PluginManager:
         self._plugins_config = plugins_config or PluginsConfig()
         self._plugin_configs = plugin_configs or {}
         self._registries: dict[str, BaseRegistry[Any]] = {}
+        self._instances = InstanceManager()
+
+    @property
+    def instances(self) -> InstanceManager:
+        return self._instances
+
+    def shutdown(self) -> None:
+        self._instances.shutdown()
 
     def registry(self, group: str) -> BaseRegistry[Any]:
         if group not in self._registries:
@@ -104,7 +113,14 @@ class PluginManager:
             if not self._plugins_config.safe_mode:
                 raise
 
-    def get(self, group: str, name: str, *, config: dict[str, Any] | None = None) -> Any:
+    def get(
+        self,
+        group: str,
+        name: str,
+        *,
+        config: dict[str, Any] | None = None,
+        run_id: str | None = None,
+    ) -> Any:
         reg = self.registry(group)
         record = reg.get_record(name)
 
@@ -126,9 +142,20 @@ class PluginManager:
                     raise PluginUnavailableError(name, DisableReason.LOAD_CRASH, str(exc)) from exc
                 raise
 
+        lifecycle = record.metadata.lifecycle
+        cache_key = f"{group}:{name}"
+
+        def instantiate() -> Any:
+            return reg.get(name, config=merged_config if merged_config else None)
+
         if self._plugins_config.safe_mode:
             try:
-                instance = reg.get(name, config=merged_config if merged_config else None)
+                instance = self._resolve_instance(
+                    cache_key,
+                    lifecycle,
+                    instantiate,
+                    run_id=run_id,
+                )
                 reg.mark_loaded(name)
                 return instance
             except PluginUnavailableError:
@@ -142,9 +169,31 @@ class PluginManager:
                 )
                 raise PluginUnavailableError(name, DisableReason.LOAD_CRASH, str(exc)) from exc
 
-        instance = reg.get(name, config=merged_config if merged_config else None)
+        instance = self._resolve_instance(
+            cache_key,
+            lifecycle,
+            instantiate,
+            run_id=run_id,
+        )
         reg.mark_loaded(name)
         return instance
+
+    def _resolve_instance(
+        self,
+        cache_key: str,
+        lifecycle: PluginLifecycle,
+        factory: Any,
+        *,
+        run_id: str | None = None,
+    ) -> Any:
+        if lifecycle == PluginLifecycle.TRANSIENT:
+            return factory()
+        return self._instances.get_or_create(
+            cache_key,
+            lifecycle,
+            factory,
+            run_id=run_id,
+        )
 
     def list_plugins(self, group: str, *, enabled_only: bool = False) -> list[PluginMetadata]:
         return self.registry(group).list_plugins(enabled_only=enabled_only)

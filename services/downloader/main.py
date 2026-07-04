@@ -9,7 +9,7 @@ import sys
 import httpx
 from tqdm import tqdm
 
-from quant_platform.bootstrap import bootstrap_pipeline, get_data_provider
+from quant_platform.bootstrap import bootstrap_pipeline
 from services.shared.config import load_config
 from services.shared.logging import setup_logging
 
@@ -28,8 +28,8 @@ async def run_downloader() -> int:
     config.paths.download_path.mkdir(parents=True, exist_ok=True)
     config.paths.state_path.mkdir(parents=True, exist_ok=True)
 
-    manager = bootstrap_pipeline(config)
-    provider = get_data_provider(manager, config)
+    runtime = bootstrap_pipeline(config)
+    provider = runtime.data_provider
     worker = provider.create_worker()
     loop = asyncio.get_running_loop()
 

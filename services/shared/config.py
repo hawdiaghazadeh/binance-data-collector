@@ -94,6 +94,7 @@ class PluginsConfigSection(BaseModel):
 
     safe_mode: bool = True
     fail_fast: bool = False
+    resolve_graph: bool = True
     enabled: list[str] | None = None
     disabled: list[str] = Field(default_factory=list)
 

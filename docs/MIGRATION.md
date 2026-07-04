@@ -21,17 +21,20 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 ## Phase 2B — Dependency Graph
 
 - **Added:** `DependencyResolver`, `CompatibilityChecker`, `CompiledExecutionGraph`, `PipelineContext`, `InstanceManager`
-- **Rollback:** Set `resolve_graph=False` in bootstrap; remove Phase 2B modules
+- **Rollback:** Set `plugins.resolve_graph: false` in config; remove Phase 2B runtime wiring
 
-## Phase 3 — Feature Registry
+## Phase 2B Runtime (G2) — Bootstrap Graph + Instance Lifecycle
 
-- **Frozen:** `FeatureProtocol` v1.0
-- **Plugins:** `ohlc_feature`, `volume_feature`
-
-## Phases 4–21 — Domain Registries
-
-- Reference plugins in `platform/plugins/domain_reference.py`
-- Each registry group under `platform.registries.domain`
+- **Goal:** Wire `resolve_graph`, `InstanceManager`, and `CompiledExecutionGraph` into the real startup path.
+- **Added:**
+  - `quant_platform/runtime.py` — `PipelineRuntime`, `compile_pipeline_graph()`, `materialize_runtime()`
+  - `PluginManager.get()` uses `InstanceManager` for singleton/scoped lifecycles
+  - `plugins.resolve_graph` config flag (default `true`)
+- **Changed:**
+  - `bootstrap_pipeline()` returns `PipelineRuntime` with cached plugin handles + compiled graph
+  - `services/downloader/main.py` and `services/importer/main.py` use `runtime.data_provider` / `runtime.storage_backend`
+- **Tests:** `tests/platform/phase2b/test_bootstrap_runtime.py`
+- **Rollback:** Set `plugins.resolve_graph: false`; revert services to `get_*` helpers; remove `runtime.py`
 
 ## Phase 2A Prep (G1) — Service Testability Refactor
 
@@ -46,6 +49,16 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
   - `ImportWorker` accepts `storage_pool: StoragePool` (was `db_pool: ClickHouseClientPool`)
 - **Tests:** `tests/test_services_seams.py`
 - **Rollback:** Revert worker constructors to concrete types only; remove `ports.py` and `batch.py`
+
+## Phase 3 — Feature Registry
+
+- **Frozen:** `FeatureProtocol` v1.0
+- **Plugins:** `ohlc_feature`, `volume_feature`
+
+## Phases 4–21 — Domain Registries
+
+- Reference plugins in `platform/plugins/domain_reference.py`
+- Each registry group under `platform.registries.domain`
 
 ## Backward Compatibility
 
