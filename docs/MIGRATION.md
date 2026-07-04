@@ -64,6 +64,14 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** extended `tests/platform/phase3/test_feature.py`
 - **Rollback:** Remove `atr_feature` and `vwap_feature` plugins and entry points
 
+## Composability Extension (G4) — Strategy & Observation
+
+- **Added:**
+  - `quant_platform/composite/strategy.py` — `CompositeStrategy` (ensemble `on_bar` + weighted signals)
+  - `quant_platform/composite/observation.py` — `CompositeObservation` (merged observation payload)
+- **Tests:** `tests/platform/test_composite.py`
+- **Rollback:** Remove `strategy.py` and `observation.py` from `quant_platform/composite/`
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
