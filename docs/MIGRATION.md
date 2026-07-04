@@ -400,6 +400,15 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/rl_product/g33/` — slippage, PnL-dominant reward, env bridge, gymnasium wrapper
 - **Rollback:** Remove `rl_product/env/`; revert graph expansion; remove G33 plugins
 
+## Phase 23 / G34 — RL Product Agent (PPO)
+
+- **Added:**
+  - `quant_platform/rl_product/agent/` — split-trunk actor-critic, GAE, PPO trainer, schema-tagged checkpoints
+  - Plugin: `ppo_torch` under `platform.rl`
+- **Tests:** `tests/platform/rl_product/g34/` — grad clip, checkpoint roundtrip, context trunk ablation
+- **Dependencies:** `torch>=2.0.0` in dev optional extras
+- **Rollback:** Remove `rl_product/agent/` and `ppo_torch` plugin
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
