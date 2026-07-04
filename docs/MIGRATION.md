@@ -321,6 +321,17 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase20/test_observability.py`
 - **Rollback:** Remove `quant_platform/observability/` and `prometheus_metrics` plugin; revert three upgraded stubs; remove Phase 20 tests
 
+## Phase 21 / G26 — Configuration
+
+- **Frozen:** `ConfigurationProtocol` v1.0
+- **Plugins:** `schema_config`
+- **Added:**
+  - `quant_platform/configurations/` — schema registry, YAML/JSON/TOML loader, `extends`/`inherits` deep merge
+  - `ConfigurationPipelineBuilder` + `register_configuration_plugins()`
+- **Changed:** `schema_config` upgraded from passthrough stub to schema-driven validation with file load and inheritance
+- **Tests:** `tests/platform/phase21/test_configuration.py`
+- **Rollback:** Remove `quant_platform/configurations/`; revert `schema_config` stub; remove Phase 21 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
