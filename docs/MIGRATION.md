@@ -298,6 +298,18 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase18/test_paper_trading.py`
 - **Rollback:** Remove `quant_platform/paper_trading/`; revert `paper_engine` stub; remove Phase 18 tests
 
+## Phase 19 / G24 — Live Trading
+
+- **Frozen:** `LiveTradingProtocol` v1.0
+- **Plugins:** `live_engine`
+- **Added:**
+  - `quant_platform/live_trading/` — exchange-fed session (strategy → broker → portfolio)
+  - `LiveTradingPipelineBuilder` + `register_live_trading_plugins()`
+  - Reuses Binance exchange adapter from Phase 14
+- **Changed:** `live_engine` upgraded from no-op stub to live session with `summary` after `stop()`
+- **Tests:** `tests/platform/phase19/test_live_trading.py`
+- **Rollback:** Remove `quant_platform/live_trading/`; revert `live_engine` stub; remove Phase 19 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
