@@ -13,6 +13,7 @@ from quant_platform.plugins.rl import (
     ict_premium_discount_prob,
     ict_session_prob,
     perception_compressor,
+    price_action_observation,
     rtm_compression_prob,
     rtm_flip_prob,
     rtm_sd_strength,
@@ -41,6 +42,7 @@ RL_PLUGIN_MODULES: list[Any] = [
     ict_premium_discount_prob,
     perception_compressor,
     feature_gate,
+    price_action_observation,
 ]
 
 RL_PLUGINS: list[tuple[PluginMetadata, Callable[..., Any]]] = [

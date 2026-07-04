@@ -159,6 +159,7 @@ ict_killzone_prob = "quant_platform.plugins.rl.ict_killzone_prob:factory"
 ict_premium_discount_prob = "quant_platform.plugins.rl.ict_premium_discount_prob:factory"
 perception_compressor = "quant_platform.plugins.rl.perception_compressor:factory"
 feature_gate = "quant_platform.plugins.rl.feature_gate:factory"
+price_action_observation = "quant_platform.plugins.rl.price_action_observation:factory"
 
 [tool.setuptools.packages.find]
 where = ["."]

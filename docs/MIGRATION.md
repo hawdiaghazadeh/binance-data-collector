@@ -381,6 +381,15 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/rl_product/g31/` — bounded outputs, no lookahead, no raw levels, gate zeros
 - **Rollback:** Remove `rl_product/perception/` and G31 plugins; revert pyproject entry points
 
+## Phase 23 / G32 — RL Product Observation
+
+- **Added:**
+  - `quant_platform/rl_product/observation/` — `ObservationSchema`, `PriceActionObservationBuilder`, `ObservationVector`
+  - Price block (≥70%), gated context, portfolio, reserved blocks — schema v1.0 float32
+  - Plugin: `price_action_observation` under `platform.rl`
+- **Tests:** `tests/platform/rl_product/g32/` — budget validator, master_gate=0 zeros context
+- **Rollback:** Remove `rl_product/observation/` and G32 plugin entry point
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
