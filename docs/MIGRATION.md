@@ -203,6 +203,17 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase10/test_action.py`
 - **Rollback:** Remove `quant_platform/actions/` and continuous/hybrid plugins; revert `discrete_action` stub; remove Phase 10 tests
 
+## Phase 11 / G16 — Environment Registry
+
+- **Frozen:** `EnvironmentProtocol` v1.0
+- **Plugins:** `spot_env`, `futures_env`
+- **Added:**
+  - `quant_platform/environments/` — spot/futures Gym-like engines + bootstrap helpers
+  - `EnvironmentRegistry` + `register_environment_plugins()` + `bootstrap_environment()`
+- **Changed:** `spot_env` upgraded from static stub to price-driven spot simulator
+- **Tests:** `tests/platform/phase11/test_environment.py`
+- **Rollback:** Remove `quant_platform/environments/` and `futures_env` plugin; revert `spot_env` stub; remove Phase 11 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

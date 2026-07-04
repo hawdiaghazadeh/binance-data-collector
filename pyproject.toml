@@ -80,6 +80,7 @@ hybrid_action = "quant_platform.plugins.domain.hybrid_action:factory"
 
 [project.entry-points."platform.environments"]
 spot_env = "quant_platform.plugins.domain.spot_env:factory"
+futures_env = "quant_platform.plugins.domain.futures_env:factory"
 
 [project.entry-points."platform.strategies"]
 rule_based = "quant_platform.plugins.domain.rule_based:factory"
