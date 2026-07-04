@@ -108,6 +108,7 @@ uniform_buffer = "quant_platform.plugins.domain.uniform_buffer:factory"
 
 [project.entry-points."platform.rl_algorithms"]
 ppo = "quant_platform.plugins.domain.ppo:factory"
+sac = "quant_platform.plugins.domain.sac:factory"
 
 [project.entry-points."platform.training_pipelines"]
 standard_rl_train = "quant_platform.plugins.domain.standard_rl_train:factory"

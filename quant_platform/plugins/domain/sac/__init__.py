@@ -1,60 +1,60 @@
-"""PPO algorithm plugin (Phase 15)."""
+"""SAC algorithm plugin (Phase 15)."""
 
 from __future__ import annotations
 
 from typing import Any
 
 from quant_platform.core.plugin import PluginMetadata
-from quant_platform.rl_algorithms.ppo import ppo_train_step
+from quant_platform.rl_algorithms.sac import sac_train_step
 
 PLUGIN_METADATA = PluginMetadata(
-    name="ppo",
+    name="sac",
     version="1.0.0",
     platform_version_compatibility=">=1.0.0,<2.0.0",
-    description="PPO policy-gradient skeleton for offline batch updates",
+    description="Soft Actor-Critic skeleton for offline batch updates",
     input_types=["replay_batch"],
     output_types=["training_metrics"],
     registry_group="platform.rl_algorithms",
 )
 
 
-class PpoAlgorithm:
+class SacAlgorithm:
     def __init__(
         self,
         *,
-        clip_ratio: float = 0.2,
         learning_rate: float = 3e-4,
-        value_coef: float = 0.5,
+        entropy_coef: float = 0.2,
+        critic_coef: float = 0.5,
     ) -> None:
-        self._clip_ratio = clip_ratio
         self._learning_rate = learning_rate
-        self._value_coef = value_coef
+        self._entropy_coef = entropy_coef
+        self._critic_coef = critic_coef
 
     def train_step(self, batch: list[Any]) -> dict[str, Any]:
-        return ppo_train_step(
+        return sac_train_step(
             batch,
-            clip_ratio=self._clip_ratio,
             learning_rate=self._learning_rate,
-            value_coef=self._value_coef,
+            entropy_coef=self._entropy_coef,
+            critic_coef=self._critic_coef,
         )
 
 
 def factory(
     *,
-    clip_ratio: float = 0.2,
     learning_rate: float = 3e-4,
-    value_coef: float = 0.5,
+    entropy_coef: float = 0.2,
+    critic_coef: float = 0.5,
     config: dict | None = None,
     **kwargs,
-) -> PpoAlgorithm:
+) -> SacAlgorithm:
     if config:
-        clip_ratio = float(config.get("clip_ratio", clip_ratio))
         learning_rate = float(config.get("learning_rate", learning_rate))
-        value_coef = float(config.get("value_coef", value_coef))
-    return PpoAlgorithm(
-        clip_ratio=clip_ratio,
+        entropy_coef = float(config.get("entropy_coef", entropy_coef))
+        critic_coef = float(config.get("critic_coef", critic_coef))
+    return SacAlgorithm(
         learning_rate=learning_rate,
-        value_coef=value_coef,
+        entropy_coef=entropy_coef,
+        critic_coef=critic_coef,
     )
 
 

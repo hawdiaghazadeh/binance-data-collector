@@ -252,6 +252,19 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase14/test_market_connectivity.py`
 - **Rollback:** Remove new packages; revert exchange/broker stubs; remove Phase 14 tests
 
+## Phase 15 / G20 — RL Core
+
+- **Frozen:** `ReplayBufferProtocol`, `RLAlgorithmProtocol`, `TrainingPipelineProtocol` v1.0
+- **Plugins:** `uniform_buffer`, `ppo`, `sac`, `standard_rl_train`
+- **Added:**
+  - `quant_platform/replay_buffers/` — uniform random replay buffer
+  - `quant_platform/rl_algorithms/` — PPO and SAC skeleton train steps
+  - `quant_platform/training_pipelines/` — standard offline training loop
+  - `quant_platform/rl_core/` — `RLCorePipelineBuilder` + grouped registration
+- **Changed:** `uniform_buffer`, `ppo`, `standard_rl_train` upgraded from stubs
+- **Tests:** `tests/platform/phase15/test_rl_core.py`
+- **Rollback:** Remove new packages and `sac` plugin; revert three upgraded stubs; remove Phase 15 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
