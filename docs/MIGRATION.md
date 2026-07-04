@@ -147,6 +147,17 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase5/test_indicator.py`
 - **Rollback:** Remove `quant_platform/indicators/` and RSI/MACD plugins; revert `fetch_klines`; remove Phase 5 tests
 
+## Phase 6 / G11 — Market Structure Registry
+
+- **Frozen:** `MarketStructureProtocol` v1.0
+- **Plugins:** `bos_choch`, `fvg`, `order_blocks`
+- **Added:**
+  - `quant_platform/market_structure/` — swings, BOS/CHoCH, FVG, order blocks
+  - `MarketStructurePipelineBuilder` + `register_market_structure_plugins()`
+- **Changed:** `bos_choch` upgraded from stub to production swing-based detection
+- **Tests:** `tests/platform/phase6/test_market_structure.py`
+- **Rollback:** Remove `quant_platform/market_structure/` and FVG/order block plugins; revert `bos_choch` stub; remove Phase 6 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

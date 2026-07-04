@@ -56,6 +56,8 @@ macd_indicator = "quant_platform.plugins.domain.macd_indicator:factory"
 
 [project.entry-points."platform.market_structures"]
 bos_choch = "quant_platform.plugins.domain.bos_choch:factory"
+fvg = "quant_platform.plugins.domain.fvg:factory"
+order_blocks = "quant_platform.plugins.domain.order_blocks:factory"
 
 [project.entry-points."platform.labels"]
 direction_label = "quant_platform.plugins.domain.direction_label:factory"
