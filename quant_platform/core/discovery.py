@@ -74,6 +74,26 @@ def _class_level_plugins(
     return results
 
 
+def _resolve_plugin_from_loaded(
+    loaded: Any,
+) -> tuple[PluginMetadata | None, Callable[..., Any] | None]:
+    if isinstance(loaded, tuple) and len(loaded) == 2:
+        meta, factory = loaded
+        return meta, factory
+
+    if callable(loaded):
+        meta = getattr(loaded, "PLUGIN_METADATA", None)
+        factory = loaded
+        if meta is None and getattr(loaded, "__module__", None):
+            module = importlib.import_module(loaded.__module__)
+            meta = getattr(module, "PLUGIN_METADATA", None)
+        return meta, factory
+
+    meta = getattr(loaded, "PLUGIN_METADATA", None)
+    factory = getattr(loaded, "factory", loaded)
+    return meta, factory
+
+
 def discover_entry_points(group: str) -> list[tuple[PluginMetadata, Callable[..., Any]]]:
     """Load plugins from setuptools entry points for a group."""
     results: list[tuple[PluginMetadata, Callable[..., Any]]] = []
@@ -85,15 +105,8 @@ def discover_entry_points(group: str) -> list[tuple[PluginMetadata, Callable[...
     for ep in eps:
         try:
             loaded = ep.load()
-            if isinstance(loaded, tuple) and len(loaded) == 2:
-                meta, factory = loaded
-            elif callable(loaded):
-                meta = getattr(loaded, "PLUGIN_METADATA", None)
-                factory = loaded
-            else:
-                meta = getattr(loaded, "PLUGIN_METADATA", None)
-                factory = getattr(loaded, "factory", loaded)
-            if meta is None or not _matches_group(meta, group):
+            meta, factory = _resolve_plugin_from_loaded(loaded)
+            if meta is None or factory is None or not _matches_group(meta, group):
                 continue
             results.append((meta, factory))
         except Exception:

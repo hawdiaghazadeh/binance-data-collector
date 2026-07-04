@@ -195,37 +195,221 @@ class SchemaConfiguration:
         return config
 
 
+def _attach_meta(factory: Callable[..., Any], meta: PluginMetadata) -> Callable[..., Any]:
+    factory.PLUGIN_METADATA = meta  # type: ignore[attr-defined]
+    return factory
+
+
+def symbol_normalizer_factory(**kwargs: Any) -> SymbolNormalizer:
+    return SymbolNormalizer()
+
+
+_attach_meta(symbol_normalizer_factory, _meta("symbol_normalizer", "platform.normalizations"))
+
+
+def ema_indicator_factory(**kwargs: Any) -> EmaIndicator:
+    return EmaIndicator()
+
+
+_attach_meta(ema_indicator_factory, _meta("ema_indicator", "platform.indicators"))
+
+
+def bos_choch_factory(**kwargs: Any) -> BosChoChAnalyzer:
+    return BosChoChAnalyzer()
+
+
+_attach_meta(bos_choch_factory, _meta("bos_choch", "platform.market_structures"))
+
+
+def direction_label_factory(**kwargs: Any) -> DirectionLabel:
+    return DirectionLabel()
+
+
+_attach_meta(direction_label_factory, _meta("direction_label", "platform.labels"))
+
+
+def candle_observation_factory(**kwargs: Any) -> CandleObservation:
+    return CandleObservation()
+
+
+_attach_meta(candle_observation_factory, _meta("candle_observation", "platform.observations"))
+
+
+def profit_reward_factory(**kwargs: Any) -> ProfitReward:
+    return ProfitReward()
+
+
+_attach_meta(profit_reward_factory, _meta("profit_reward", "platform.rewards"))
+
+
+def discrete_action_factory(**kwargs: Any) -> DiscreteAction:
+    return DiscreteAction()
+
+
+_attach_meta(discrete_action_factory, _meta("discrete_action", "platform.actions"))
+
+
+def spot_env_factory(**kwargs: Any) -> SpotEnvironment:
+    return SpotEnvironment()
+
+
+_attach_meta(spot_env_factory, _meta("spot_env", "platform.environments"))
+
+
+def rule_based_factory(**kwargs: Any) -> RuleBasedStrategy:
+    return RuleBasedStrategy()
+
+
+_attach_meta(rule_based_factory, _meta("rule_based", "platform.strategies"))
+
+
+def simulation_execution_factory(**kwargs: Any) -> SimulationExecution:
+    return SimulationExecution()
+
+
+_attach_meta(simulation_execution_factory, _meta("simulation_execution", "platform.executions"))
+
+
+def fixed_risk_factory(**kwargs: Any) -> FixedRisk:
+    return FixedRisk()
+
+
+_attach_meta(fixed_risk_factory, _meta("fixed_risk", "platform.risks"))
+
+
+def single_asset_factory(**kwargs: Any) -> SingleAssetPortfolio:
+    return SingleAssetPortfolio()
+
+
+_attach_meta(single_asset_factory, _meta("single_asset", "platform.portfolios"))
+
+
+def binance_exchange_factory(**kwargs: Any) -> BinanceExchange:
+    return BinanceExchange()
+
+
+_attach_meta(binance_exchange_factory, _meta("binance_exchange", "platform.exchanges"))
+
+
+def paper_broker_factory(**kwargs: Any) -> PaperBroker:
+    return PaperBroker()
+
+
+_attach_meta(paper_broker_factory, _meta("paper_broker", "platform.brokers"))
+
+
+def uniform_buffer_factory(**kwargs: Any) -> UniformReplayBuffer:
+    return UniformReplayBuffer()
+
+
+_attach_meta(uniform_buffer_factory, _meta("uniform_buffer", "platform.replay_buffers"))
+
+
+def ppo_factory(**kwargs: Any) -> PpoAlgorithm:
+    return PpoAlgorithm()
+
+
+_attach_meta(ppo_factory, _meta("ppo", "platform.rl_algorithms"))
+
+
+def standard_rl_train_factory(**kwargs: Any) -> StandardRlTraining:
+    return StandardRlTraining()
+
+
+_attach_meta(standard_rl_train_factory, _meta("standard_rl_train", "platform.training_pipelines"))
+
+
+def walk_forward_factory(**kwargs: Any) -> WalkForwardEval:
+    return WalkForwardEval()
+
+
+_attach_meta(walk_forward_factory, _meta("walk_forward", "platform.evaluation_pipelines"))
+
+
+def event_driven_factory(**kwargs: Any) -> EventDrivenBacktest:
+    return EventDrivenBacktest()
+
+
+_attach_meta(event_driven_factory, _meta("event_driven", "platform.backtesting"))
+
+
+def paper_engine_factory(**kwargs: Any) -> PaperTradingEngine:
+    return PaperTradingEngine()
+
+
+_attach_meta(paper_engine_factory, _meta("paper_engine", "platform.paper_trading"))
+
+
+def live_engine_factory(**kwargs: Any) -> LiveTradingEngine:
+    return LiveTradingEngine()
+
+
+_attach_meta(live_engine_factory, _meta("live_engine", "platform.live_trading"))
+
+
+def equity_curve_factory(**kwargs: Any) -> EquityCurveViz:
+    return EquityCurveViz()
+
+
+_attach_meta(equity_curve_factory, _meta("equity_curve", "platform.visualizations"))
+
+
+def slack_notifier_factory(**kwargs: Any) -> SlackNotification:
+    return SlackNotification()
+
+
+_attach_meta(slack_notifier_factory, _meta("slack_notifier", "platform.notifications"))
+
+
+def structlog_monitoring_factory(**kwargs: Any) -> StructlogMonitoring:
+    return StructlogMonitoring()
+
+
+_attach_meta(structlog_monitoring_factory, _meta("structlog_monitoring", "platform.monitoring"))
+
+
+def schema_config_factory(**kwargs: Any) -> SchemaConfiguration:
+    return SchemaConfiguration()
+
+
+_attach_meta(schema_config_factory, _meta("schema_config", "platform.configurations"))
+
+
 DOMAIN_PLUGINS: list[tuple[str, PluginMetadata, Callable[..., Any]]] = [
-    ("platform.normalizations", _meta("symbol_normalizer", "platform.normalizations"), lambda **kw: SymbolNormalizer()),
-    ("platform.indicators", _meta("ema_indicator", "platform.indicators"), lambda **kw: EmaIndicator()),
-    ("platform.market_structures", _meta("bos_choch", "platform.market_structures"), lambda **kw: BosChoChAnalyzer()),
-    ("platform.labels", _meta("direction_label", "platform.labels"), lambda **kw: DirectionLabel()),
-    ("platform.observations", _meta("candle_observation", "platform.observations"), lambda **kw: CandleObservation()),
-    ("platform.rewards", _meta("profit_reward", "platform.rewards"), lambda **kw: ProfitReward()),
-    ("platform.actions", _meta("discrete_action", "platform.actions"), lambda **kw: DiscreteAction()),
-    ("platform.environments", _meta("spot_env", "platform.environments"), lambda **kw: SpotEnvironment()),
-    ("platform.strategies", _meta("rule_based", "platform.strategies"), lambda **kw: RuleBasedStrategy()),
-    ("platform.executions", _meta("simulation_execution", "platform.executions"), lambda **kw: SimulationExecution()),
-    ("platform.risks", _meta("fixed_risk", "platform.risks"), lambda **kw: FixedRisk()),
-    ("platform.portfolios", _meta("single_asset", "platform.portfolios"), lambda **kw: SingleAssetPortfolio()),
-    ("platform.exchanges", _meta("binance_exchange", "platform.exchanges"), lambda **kw: BinanceExchange()),
-    ("platform.brokers", _meta("paper_broker", "platform.brokers"), lambda **kw: PaperBroker()),
-    ("platform.replay_buffers", _meta("uniform_buffer", "platform.replay_buffers"), lambda **kw: UniformReplayBuffer()),
-    ("platform.rl_algorithms", _meta("ppo", "platform.rl_algorithms"), lambda **kw: PpoAlgorithm()),
-    ("platform.training_pipelines", _meta("standard_rl_train", "platform.training_pipelines"), lambda **kw: StandardRlTraining()),
-    ("platform.evaluation_pipelines", _meta("walk_forward", "platform.evaluation_pipelines"), lambda **kw: WalkForwardEval()),
-    ("platform.backtesting", _meta("event_driven", "platform.backtesting"), lambda **kw: EventDrivenBacktest()),
-    ("platform.paper_trading", _meta("paper_engine", "platform.paper_trading"), lambda **kw: PaperTradingEngine()),
-    ("platform.live_trading", _meta("live_engine", "platform.live_trading"), lambda **kw: LiveTradingEngine()),
-    ("platform.visualizations", _meta("equity_curve", "platform.visualizations"), lambda **kw: EquityCurveViz()),
-    ("platform.notifications", _meta("slack_notifier", "platform.notifications"), lambda **kw: SlackNotification()),
-    ("platform.monitoring", _meta("structlog_monitoring", "platform.monitoring"), lambda **kw: StructlogMonitoring()),
-    ("platform.configurations", _meta("schema_config", "platform.configurations"), lambda **kw: SchemaConfiguration()),
+    ("platform.normalizations", symbol_normalizer_factory.PLUGIN_METADATA, symbol_normalizer_factory),
+    ("platform.indicators", ema_indicator_factory.PLUGIN_METADATA, ema_indicator_factory),
+    ("platform.market_structures", bos_choch_factory.PLUGIN_METADATA, bos_choch_factory),
+    ("platform.labels", direction_label_factory.PLUGIN_METADATA, direction_label_factory),
+    ("platform.observations", candle_observation_factory.PLUGIN_METADATA, candle_observation_factory),
+    ("platform.rewards", profit_reward_factory.PLUGIN_METADATA, profit_reward_factory),
+    ("platform.actions", discrete_action_factory.PLUGIN_METADATA, discrete_action_factory),
+    ("platform.environments", spot_env_factory.PLUGIN_METADATA, spot_env_factory),
+    ("platform.strategies", rule_based_factory.PLUGIN_METADATA, rule_based_factory),
+    ("platform.executions", simulation_execution_factory.PLUGIN_METADATA, simulation_execution_factory),
+    ("platform.risks", fixed_risk_factory.PLUGIN_METADATA, fixed_risk_factory),
+    ("platform.portfolios", single_asset_factory.PLUGIN_METADATA, single_asset_factory),
+    ("platform.exchanges", binance_exchange_factory.PLUGIN_METADATA, binance_exchange_factory),
+    ("platform.brokers", paper_broker_factory.PLUGIN_METADATA, paper_broker_factory),
+    ("platform.replay_buffers", uniform_buffer_factory.PLUGIN_METADATA, uniform_buffer_factory),
+    ("platform.rl_algorithms", ppo_factory.PLUGIN_METADATA, ppo_factory),
+    ("platform.training_pipelines", standard_rl_train_factory.PLUGIN_METADATA, standard_rl_train_factory),
+    ("platform.evaluation_pipelines", walk_forward_factory.PLUGIN_METADATA, walk_forward_factory),
+    ("platform.backtesting", event_driven_factory.PLUGIN_METADATA, event_driven_factory),
+    ("platform.paper_trading", paper_engine_factory.PLUGIN_METADATA, paper_engine_factory),
+    ("platform.live_trading", live_engine_factory.PLUGIN_METADATA, live_engine_factory),
+    ("platform.visualizations", equity_curve_factory.PLUGIN_METADATA, equity_curve_factory),
+    ("platform.notifications", slack_notifier_factory.PLUGIN_METADATA, slack_notifier_factory),
+    ("platform.monitoring", structlog_monitoring_factory.PLUGIN_METADATA, structlog_monitoring_factory),
+    ("platform.configurations", schema_config_factory.PLUGIN_METADATA, schema_config_factory),
 ]
 
 
 def register_all_domain_plugins(manager: PluginManager) -> int:
     count = 0
+    domain_groups = {group for group, _, _ in DOMAIN_PLUGINS}
+    for group in domain_groups:
+        count += manager.discover(group, scan_packages=[])
+
     for group, meta, factory in DOMAIN_PLUGINS:
         reg = GROUP_REGISTRY_MAP.get(group) or manager.registry(group)
         if meta.name not in {m.name for m in reg.list_plugins()}:

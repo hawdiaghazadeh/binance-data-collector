@@ -99,6 +99,18 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/test_compatibility_g6.py`
 - **Rollback:** Revert `compatibility.py` to platform-only checks; remove matrix fields from plugins
 
+## Entry Points (G7) — Per Registry Group
+
+- **Added:**
+  - `quant_platform/registries/groups.py` — `ALL_REGISTRY_GROUPS` manifest
+  - Entry points in `pyproject.toml` for all 30 registry groups
+  - Named factory exports in `domain_reference.py` for domain plugins
+- **Changed:**
+  - `register_all_domain_plugins()` discovers via entry points before manual fallback
+  - Added `platform.dataset_builders` entry point
+- **Tests:** `tests/platform/test_entry_points_g7.py`
+- **Rollback:** Remove domain entry-point sections from `pyproject.toml`; revert `register_all_domain_plugins()`
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
