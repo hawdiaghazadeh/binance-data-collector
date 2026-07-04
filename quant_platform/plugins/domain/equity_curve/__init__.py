@@ -1,22 +1,33 @@
-"""Reference domain plugin: equity_curve."""
+"""Equity curve visualization plugin (Phase 20)."""
 
 from __future__ import annotations
 
-from quant_platform.core.context import PipelineContext
+from typing import Any
 
-from quant_platform.plugins.domain._helpers import attach_factory_metadata, reference_meta
+from quant_platform.core.context import DataEnvelope, PipelineContext
+from quant_platform.core.plugin import PluginMetadata
+from quant_platform.observability.visualization import render_equity_curve
 
-PLUGIN_METADATA = reference_meta("equity_curve", "platform.visualizations")
+PLUGIN_METADATA = PluginMetadata(
+    name="equity_curve",
+    version="1.0.0",
+    platform_version_compatibility=">=1.0.0,<2.0.0",
+    description="Grafana-compatible equity curve panel from pipeline context",
+    input_types=["equity_curve", "backtest_result", "paper_trading_result"],
+    output_types=["visualization"],
+    registry_group="platform.visualizations",
+)
 
 
 class EquityCurveViz:
-
-    def render(self, ctx: PipelineContext) -> dict:
-        return {"type": "equity_curve"}
+    def render(self, ctx: PipelineContext) -> dict[str, Any]:
+        chart = render_equity_curve(ctx)
+        ctx.emit(DataEnvelope(type_key="visualization", payload=chart))
+        return chart
 
 
 def factory(**kwargs) -> EquityCurveViz:
     return EquityCurveViz()
 
 
-attach_factory_metadata(factory, PLUGIN_METADATA)
+factory.PLUGIN_METADATA = PLUGIN_METADATA  # type: ignore[attr-defined]

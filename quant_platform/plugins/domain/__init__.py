@@ -31,6 +31,7 @@ from . import (
     paper_engine,
     portfolio_observation,
     ppo,
+    prometheus_metrics,
     profit_reward,
     regime_label,
     risk_observation,
@@ -98,6 +99,7 @@ DOMAIN_PLUGIN_MODULES: list[tuple[str, Any]] = [
     ("platform.visualizations", equity_curve),
     ("platform.notifications", slack_notifier),
     ("platform.monitoring", structlog_monitoring),
+    ("platform.monitoring", prometheus_metrics),
     ("platform.configurations", schema_config),
 ]
 

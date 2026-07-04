@@ -55,6 +55,5 @@ class TestSplitDomainPackages:
         module = importlib.import_module("quant_platform.plugins.domain.equity_curve")
         viz = module.factory()
         assert module.factory.PLUGIN_METADATA.registry_group == "platform.visualizations"
-        assert viz.render(__import__("quant_platform.core.context", fromlist=["PipelineContext"]).PipelineContext()) == {
-            "type": "equity_curve"
-        }
+        ctx = __import__("quant_platform.core.context", fromlist=["PipelineContext"]).PipelineContext()
+        assert viz.render(ctx)["type"] == "equity_curve"

@@ -135,6 +135,7 @@ slack_notifier = "quant_platform.plugins.domain.slack_notifier:factory"
 
 [project.entry-points."platform.monitoring"]
 structlog_monitoring = "quant_platform.plugins.domain.structlog_monitoring:factory"
+prometheus_metrics = "quant_platform.plugins.domain.prometheus_metrics:factory"
 
 [project.entry-points."platform.configurations"]
 schema_config = "quant_platform.plugins.domain.schema_config:factory"

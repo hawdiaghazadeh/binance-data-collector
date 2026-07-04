@@ -310,6 +310,17 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase19/test_live_trading.py`
 - **Rollback:** Remove `quant_platform/live_trading/`; revert `live_engine` stub; remove Phase 19 tests
 
+## Phase 20 / G25 — Observability
+
+- **Frozen:** `VisualizationProtocol`, `NotificationProtocol`, `MonitoringProtocol` v1.0
+- **Plugins:** `equity_curve`, `slack_notifier`, `structlog_monitoring`, `prometheus_metrics`
+- **Added:**
+  - `quant_platform/observability/` — shared event bus, Grafana panel JSON, Slack webhook, metrics export
+  - `ObservabilityPipelineBuilder` + grouped registration
+- **Changed:** `equity_curve`, `slack_notifier`, `structlog_monitoring` upgraded from stubs
+- **Tests:** `tests/platform/phase20/test_observability.py`
+- **Rollback:** Remove `quant_platform/observability/` and `prometheus_metrics` plugin; revert three upgraded stubs; remove Phase 20 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

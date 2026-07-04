@@ -41,4 +41,4 @@ class TestDomainRegistries:
 
         assert notifier.send("test") is True
         monitor.record_metric("latency", 1.0)
-        assert viz.render(PipelineContext()) == {"type": "equity_curve"}
+        assert viz.render(PipelineContext())["type"] == "equity_curve"
