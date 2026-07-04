@@ -332,6 +332,15 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase21/test_configuration.py`
 - **Rollback:** Remove `quant_platform/configurations/`; revert `schema_config` stub; remove Phase 21 tests
 
+## Phase 22 / G27 — Marketplace CLI
+
+- **Added:**
+  - `quant_platform/marketplace/` — pip-backed install/update/remove, enable/disable with config persistence
+  - `quant-plugins` CLI (`install`, `enable`, `disable`, `update`, `remove`, `list`)
+  - Installed plugin state file (`.quant_platform/installed_plugins.yaml`)
+- **Tests:** `tests/platform/phase22/test_marketplace_cli.py`
+- **Rollback:** Remove `quant_platform/marketplace/`; remove CLI entry point; remove Phase 22 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

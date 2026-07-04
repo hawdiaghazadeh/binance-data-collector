@@ -27,6 +27,9 @@ dev = [
     "respx>=0.21.0",
 ]
 
+[project.scripts]
+quant-plugins = "quant_platform.marketplace.cli:main"
+
 [project.entry-points."platform.data_providers"]
 binance_vision = "quant_platform.plugins.binance_vision:factory"
 
