@@ -61,6 +61,7 @@ order_blocks = "quant_platform.plugins.domain.order_blocks:factory"
 
 [project.entry-points."platform.labels"]
 direction_label = "quant_platform.plugins.domain.direction_label:factory"
+regime_label = "quant_platform.plugins.domain.regime_label:factory"
 
 [project.entry-points."platform.observations"]
 candle_observation = "quant_platform.plugins.domain.candle_observation:factory"

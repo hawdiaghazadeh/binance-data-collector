@@ -158,6 +158,17 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase6/test_market_structure.py`
 - **Rollback:** Remove `quant_platform/market_structure/` and FVG/order block plugins; revert `bos_choch` stub; remove Phase 6 tests
 
+## Phase 7 / G12 — Label Registry
+
+- **Frozen:** `LabelProtocol` v1.0
+- **Plugins:** `direction_label`, `regime_label`
+- **Added:**
+  - `quant_platform/labels/` — direction, regime, pipeline
+  - `LabelPipelineBuilder` + `register_label_plugins()`
+- **Changed:** `direction_label` upgraded from stub to horizon-based future direction labels
+- **Tests:** `tests/platform/phase7/test_label.py`
+- **Rollback:** Remove `quant_platform/labels/` and `regime_label` plugin; revert `direction_label` stub; remove Phase 7 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
