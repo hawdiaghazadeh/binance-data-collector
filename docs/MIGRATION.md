@@ -192,6 +192,17 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase9/test_reward.py`
 - **Rollback:** Remove `quant_platform/rewards/` and sharpe/drawdown plugins; revert `profit_reward` stub; remove Phase 9 tests
 
+## Phase 10 / G15 — Action Registry
+
+- **Frozen:** `ActionProtocol` v1.0
+- **Plugins:** `discrete_action`, `continuous_action`, `hybrid_action`
+- **Added:**
+  - `quant_platform/actions/` — discrete, continuous, hybrid action spaces + pipeline
+  - `ActionPipelineBuilder` + `register_action_plugins()`
+- **Changed:** `discrete_action` upgraded from always-hold stub to policy/signal-driven sampling
+- **Tests:** `tests/platform/phase10/test_action.py`
+- **Rollback:** Remove `quant_platform/actions/` and continuous/hybrid plugins; revert `discrete_action` stub; remove Phase 10 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

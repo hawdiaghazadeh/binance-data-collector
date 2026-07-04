@@ -75,6 +75,8 @@ drawdown_penalty = "quant_platform.plugins.domain.drawdown_penalty:factory"
 
 [project.entry-points."platform.actions"]
 discrete_action = "quant_platform.plugins.domain.discrete_action:factory"
+continuous_action = "quant_platform.plugins.domain.continuous_action:factory"
+hybrid_action = "quant_platform.plugins.domain.hybrid_action:factory"
 
 [project.entry-points."platform.environments"]
 spot_env = "quant_platform.plugins.domain.spot_env:factory"
