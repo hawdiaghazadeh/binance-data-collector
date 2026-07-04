@@ -50,12 +50,15 @@ class PriceActionObservationBuilder:
         if t < 0 or t >= len(bars):
             raise ValueError("t out of range")
 
-        price = build_price_action_block(
-            bars,
-            t,
-            price_dims=self._schema.price_dims,
-            window=self._schema.window,
-        )
+        if self._context_only_mode(config):
+            price = [0.0] * self._schema.price_dims
+        else:
+            price = build_price_action_block(
+                bars,
+                t,
+                price_dims=self._schema.price_dims,
+                window=self._schema.window,
+            )
         context = self._build_context(bars, t, config=config)
         portfolio_vec = build_portfolio_block(portfolio, portfolio_dims=self._schema.portfolio_dims)
         reserved = [0.0] * self._schema.reserved_dims
@@ -79,6 +82,14 @@ class PriceActionObservationBuilder:
         if len(context) < dims:
             context = context + [0.0] * (dims - len(context))
         return context[:dims]
+
+    @staticmethod
+    def _context_only_mode(config: dict | None) -> bool:
+        if not config:
+            return False
+        evaluation = config.get("evaluation", {})
+        ablation = evaluation.get("ablation", {})
+        return bool(ablation.get("context_only", False))
 
     def context_block_zeros(self, bars: Sequence[KlineRow], t: int, *, config: dict | None = None) -> bool:
         obs = self.build(bars, t, config=config)

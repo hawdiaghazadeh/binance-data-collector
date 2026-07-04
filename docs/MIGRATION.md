@@ -419,6 +419,15 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/rl_product/g35/` — short train run, no runtime discovery, CLI smoke
 - **Rollback:** Remove `rl_product/training/`; remove CLI entry point and G35 plugins
 
+## Phase 24 / G36 — RL Product Evaluation
+
+- **Added:**
+  - `quant_platform/rl_product/evaluation/` — `PolicyEvaluator`, `WalkForwardRLEvaluator`, `AblationRunner`, `LeakageChecker`, deterministic replay
+  - Plugins: `walk_forward_rl_eval`, `ablation_eval`
+  - Observation `test_mode` + context-only ablation path (price block zeroed)
+- **Tests:** `tests/platform/rl_product/g36/` — walk-forward folds, ablation structure, leakage checks, deterministic replay
+- **Rollback:** Remove `rl_product/evaluation/` and G36 plugins
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

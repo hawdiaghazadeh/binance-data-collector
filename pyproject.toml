@@ -169,6 +169,8 @@ rl_env_futures = "quant_platform.plugins.rl.rl_env_futures:factory"
 ppo_torch = "quant_platform.plugins.rl.ppo_torch:factory"
 online_training = "quant_platform.plugins.rl.online_training:factory"
 curriculum_scheduler = "quant_platform.plugins.rl.curriculum_scheduler:factory"
+walk_forward_rl_eval = "quant_platform.plugins.rl.walk_forward_rl_eval:factory"
+ablation_eval = "quant_platform.plugins.rl.ablation_eval:factory"
 
 [tool.setuptools.packages.find]
 where = ["."]

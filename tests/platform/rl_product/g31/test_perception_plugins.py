@@ -22,9 +22,9 @@ def _clean_rl_registry():
 def test_g31_plugins_registered():
     manager = PluginManager()
     count = register_rl_product_plugins(manager)
-    assert count >= 22
+    assert count >= 24
     names = {meta.name for meta, _ in RL_PLUGINS}
-    assert len(names) == 22
+    assert len(names) == 24
     expected = {
         "training_dataset",
         "episode_cache",
@@ -48,5 +48,7 @@ def test_g31_plugins_registered():
         "ppo_torch",
         "online_training",
         "curriculum_scheduler",
+        "walk_forward_rl_eval",
+        "ablation_eval",
     }
     assert names == expected

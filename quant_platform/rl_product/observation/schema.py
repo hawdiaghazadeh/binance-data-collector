@@ -15,6 +15,7 @@ class ObservationSchema:
     context_dims_max: int = 32
     schema_version: str = "1.0"
     window: int = 64
+    test_mode: bool = False
 
     @property
     def price_dims(self) -> int:
@@ -32,9 +33,17 @@ class ObservationSchema:
             context_dims_max=int(obs.get("context_dims_max", 32)),
             schema_version=str(obs.get("schema_version", "1.0")),
             window=int(obs.get("window", 64)),
+            test_mode=bool(obs.get("test_mode", False)),
         )
 
     def validate_budget(self) -> None:
+        if self.test_mode:
+            if self.obs_dim < 32:
+                raise ValueError("obs_dim must be >= 32")
+            total = self.price_dims + self.context_dims + self.portfolio_dims + self.reserved_dims
+            if total != self.obs_dim:
+                raise ValueError(f"block dims sum to {total}, expected obs_dim {self.obs_dim}")
+            return
         if self.schema_version != "1.0":
             raise ValueError(f"unsupported schema_version: {self.schema_version}")
         if self.obs_dim < 32:

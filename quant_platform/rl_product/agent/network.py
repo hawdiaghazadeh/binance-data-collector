@@ -75,10 +75,12 @@ class SplitTrunkActorCritic:
             yield from module.parameters()
         yield self.log_std
 
-    def trunk_features(self, obs, *, zero_context: bool = False):
+    def trunk_features(self, obs, *, zero_context: bool = False, zero_price: bool = False):
         torch = self._torch
         price = obs[:, self._price_slice]
         context = obs[:, self._context_slice]
+        if zero_price:
+            price = torch.zeros_like(price)
         if zero_context:
             context = torch.zeros_like(context)
         portfolio = obs[:, self._portfolio_slice]
@@ -87,17 +89,17 @@ class SplitTrunkActorCritic:
         portfolio_h = self.portfolio_trunk(portfolio)
         return torch.cat([price_h, context_h, portfolio_h], dim=-1)
 
-    def forward(self, obs, *, zero_context: bool = False):
+    def forward(self, obs, *, zero_context: bool = False, zero_price: bool = False):
         torch = self._torch
-        features = self.trunk_features(obs, zero_context=zero_context)
+        features = self.trunk_features(obs, zero_context=zero_context, zero_price=zero_price)
         mean = self.policy_head(features)
         value = self.value_head(features).squeeze(-1)
         std = torch.exp(self.log_std).expand_as(mean)
         return mean, std, value
 
-    def act(self, obs, *, deterministic: bool = False, zero_context: bool = False):
+    def act(self, obs, *, deterministic: bool = False, zero_context: bool = False, zero_price: bool = False):
         torch = self._torch
-        mean, std, value = self.forward(obs, zero_context=zero_context)
+        mean, std, value = self.forward(obs, zero_context=zero_context, zero_price=zero_price)
         if deterministic:
             action = mean
             log_prob = torch.zeros(obs.shape[0], device=obs.device)
@@ -108,9 +110,9 @@ class SplitTrunkActorCritic:
             action = raw
         return action, log_prob, value
 
-    def evaluate_actions(self, obs, actions, *, zero_context: bool = False):
+    def evaluate_actions(self, obs, actions, *, zero_context: bool = False, zero_price: bool = False):
         torch = self._torch
-        mean, std, value = self.forward(obs, zero_context=zero_context)
+        mean, std, value = self.forward(obs, zero_context=zero_context, zero_price=zero_price)
         dist = torch.distributions.Normal(mean, std)
         log_prob = dist.log_prob(actions).sum(dim=-1)
         entropy = dist.entropy().sum(dim=-1)

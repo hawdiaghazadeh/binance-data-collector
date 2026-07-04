@@ -17,6 +17,8 @@ from quant_platform.plugins.rl import (
     ppo_torch,
     online_training,
     curriculum_scheduler,
+    walk_forward_rl_eval,
+    ablation_eval,
     price_action_observation,
     rl_env_futures,
     rl_env_spot,
@@ -55,6 +57,8 @@ RL_PLUGIN_MODULES: list[Any] = [
     ppo_torch,
     online_training,
     curriculum_scheduler,
+    walk_forward_rl_eval,
+    ablation_eval,
 ]
 
 RL_PLUGINS: list[tuple[PluginMetadata, Callable[..., Any]]] = [
