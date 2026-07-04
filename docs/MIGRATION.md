@@ -123,6 +123,18 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/test_domain_split_g8.py`
 - **Rollback:** Restore monolithic `domain_reference.py`; remove `plugins/domain/` packages
 
+## Phase 4 / G9 — Normalization Registry
+
+- **Frozen:** `NormalizationProtocol` v1.0
+- **Plugins:** `symbol_normalizer` (symbol + timeframe canonicalization), `z_score` (rolling z-score on kline field)
+- **Added:**
+  - `quant_platform/normalizations/` — `symbol.py`, `z_score.py`, `pipeline.py`
+  - `quant_platform/plugins/domain/z_score/` — rolling z-score normalizer
+  - `NormalizationPipelineBuilder` + `register_normalization_plugins()`
+- **Changed:** `symbol_normalizer` upgraded from stub to production implementation
+- **Tests:** `tests/platform/phase4/test_normalization.py`
+- **Rollback:** Remove `quant_platform/normalizations/` and `z_score` plugin; revert `symbol_normalizer` to stub; remove Phase 4 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

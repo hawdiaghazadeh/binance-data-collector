@@ -47,6 +47,7 @@ vwap_feature = "quant_platform.plugins.vwap_feature:factory"
 
 [project.entry-points."platform.normalizations"]
 symbol_normalizer = "quant_platform.plugins.domain.symbol_normalizer:factory"
+z_score = "quant_platform.plugins.domain.z_score:factory"
 
 [project.entry-points."platform.indicators"]
 ema_indicator = "quant_platform.plugins.domain.ema_indicator:factory"

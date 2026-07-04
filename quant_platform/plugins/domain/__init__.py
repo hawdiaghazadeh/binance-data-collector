@@ -32,11 +32,13 @@ from . import (
     symbol_normalizer,
     uniform_buffer,
     walk_forward,
+    z_score,
 )
 from quant_platform.registries.domain import GROUP_REGISTRY_MAP
 
 DOMAIN_PLUGIN_MODULES: list[tuple[str, Any]] = [
     ("platform.normalizations", symbol_normalizer),
+    ("platform.normalizations", z_score),
     ("platform.indicators", ema_indicator),
     ("platform.market_structures", bos_choch),
     ("platform.labels", direction_label),

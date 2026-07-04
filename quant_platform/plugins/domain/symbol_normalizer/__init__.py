@@ -1,28 +1,38 @@
-"""Reference domain plugin: symbol_normalizer."""
+"""Symbol and timeframe normalizer plugin (Phase 4)."""
 
 from __future__ import annotations
 
 from quant_platform.core.context import DataEnvelope, PipelineContext
+from quant_platform.core.plugin import PluginMetadata
+from quant_platform.normalizations.symbol import normalize_kline_rows
 
-from quant_platform.plugins.domain._helpers import attach_factory_metadata, reference_meta
-
-PLUGIN_METADATA = reference_meta("symbol_normalizer", "platform.normalizations")
+PLUGIN_METADATA = PluginMetadata(
+    name="symbol_normalizer",
+    version="1.0.0",
+    platform_version_compatibility=">=1.0.0,<2.0.0",
+    description="Normalize exchange symbol and timeframe on kline rows",
+    input_types=["klines"],
+    output_types=["klines"],
+    registry_group="platform.normalizations",
+)
 
 
 class SymbolNormalizer:
-
     def normalize(self, ctx: PipelineContext) -> None:
-        for key in list(ctx.keys()):
-            env = ctx.require(key)
-            if isinstance(env.payload, list) and env.payload and isinstance(env.payload[0], dict):
-                normalized = [
-                    {**row, "symbol": str(row.get("symbol", "")).upper()} for row in env.payload
-                ]
-                ctx.emit(DataEnvelope(type_key=key, payload=normalized, metadata=env.metadata))
+        klines_env = ctx.require("klines")
+        rows = list(klines_env.payload)
+        normalized = normalize_kline_rows(rows)
+        ctx.emit(
+            DataEnvelope(
+                type_key="klines",
+                payload=normalized,
+                metadata={**klines_env.metadata, "normalized": True},
+            )
+        )
 
 
 def factory(**kwargs) -> SymbolNormalizer:
     return SymbolNormalizer()
 
 
-attach_factory_metadata(factory, PLUGIN_METADATA)
+factory.PLUGIN_METADATA = PLUGIN_METADATA  # type: ignore[attr-defined]
