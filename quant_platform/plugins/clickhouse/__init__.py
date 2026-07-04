@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 from quant_platform.core.plugin import PluginLifecycle, PluginMetadata
@@ -77,6 +78,19 @@ class ClickHouseStorageBackend:
             self.connect()
         assert self._client is not None
         return self._client.fetch_klines(symbol, timeframe, limit=limit)
+
+    def fetch_klines_range(
+        self,
+        symbol: str,
+        timeframe: str,
+        *,
+        start: datetime,
+        end: datetime,
+    ) -> list[KlineRow]:
+        if self._client is None:
+            self.connect()
+        assert self._client is not None
+        return self._client.fetch_klines_range(symbol, timeframe, start=start, end=end)
 
 
 def factory(*, config: Any = None) -> ClickHouseStorageBackend:

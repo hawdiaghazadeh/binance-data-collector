@@ -36,6 +36,7 @@ from quant_platform.registries.pipeline import (
     PARSER_GROUP,
     STORAGE_BACKEND_GROUP,
 )
+from quant_platform.registries.rl_product import RL_GROUP
 
 PIPELINE_REGISTRY_GROUPS = (
     DATA_PROVIDER_GROUP,
@@ -70,4 +71,5 @@ ALL_REGISTRY_GROUPS = PIPELINE_REGISTRY_GROUPS + (FEATURE_GROUP,) + (
     NOTIFICATION_GROUP,
     MONITORING_GROUP,
     CONFIGURATION_GROUP,
+    RL_GROUP,
 )

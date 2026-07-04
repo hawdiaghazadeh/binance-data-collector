@@ -143,6 +143,10 @@ prometheus_metrics = "quant_platform.plugins.domain.prometheus_metrics:factory"
 [project.entry-points."platform.configurations"]
 schema_config = "quant_platform.plugins.domain.schema_config:factory"
 
+[project.entry-points."platform.rl"]
+training_dataset = "quant_platform.plugins.rl.training_dataset:factory"
+episode_cache = "quant_platform.plugins.rl.episode_cache:factory"
+
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["services*", "quant_platform*"]

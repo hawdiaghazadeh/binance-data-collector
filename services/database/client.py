@@ -20,6 +20,30 @@ if TYPE_CHECKING:
 logger = structlog.get_logger("database")
 
 
+def _parse_kline_row(row: tuple) -> KlineRow:
+    open_time = row[2]
+    close_time = row[8]
+    if isinstance(open_time, datetime) and open_time.tzinfo is None:
+        open_time = open_time.replace(tzinfo=timezone.utc)
+    if isinstance(close_time, datetime) and close_time.tzinfo is None:
+        close_time = close_time.replace(tzinfo=timezone.utc)
+    return KlineRow(
+        symbol=str(row[0]),
+        timeframe=str(row[1]),
+        open_time=open_time,
+        open=float(row[3]),
+        high=float(row[4]),
+        low=float(row[5]),
+        close=float(row[6]),
+        volume=float(row[7]),
+        close_time=close_time,
+        quote_volume=float(row[9]),
+        trade_count=int(row[10]),
+        taker_buy_volume=float(row[11]),
+        taker_buy_quote_volume=float(row[12]),
+    )
+
+
 class ClickHouseClient:
     """
     Production ClickHouse client for batch kline inserts and import tracking.
@@ -244,32 +268,44 @@ class ClickHouseClient:
             query,
             parameters={"symbol": symbol, "timeframe": timeframe, "limit": limit},
         )
-        rows: list[KlineRow] = []
-        for row in reversed(result.result_rows):
-            open_time = row[2]
-            close_time = row[8]
-            if isinstance(open_time, datetime) and open_time.tzinfo is None:
-                open_time = open_time.replace(tzinfo=timezone.utc)
-            if isinstance(close_time, datetime) and close_time.tzinfo is None:
-                close_time = close_time.replace(tzinfo=timezone.utc)
-            rows.append(
-                KlineRow(
-                    symbol=str(row[0]),
-                    timeframe=str(row[1]),
-                    open_time=open_time,
-                    open=float(row[3]),
-                    high=float(row[4]),
-                    low=float(row[5]),
-                    close=float(row[6]),
-                    volume=float(row[7]),
-                    close_time=close_time,
-                    quote_volume=float(row[9]),
-                    trade_count=int(row[10]),
-                    taker_buy_volume=float(row[11]),
-                    taker_buy_quote_volume=float(row[12]),
-                )
-            )
-        return rows
+        return [_parse_kline_row(row) for row in reversed(result.result_rows)]
+
+    def fetch_klines_range(
+        self,
+        symbol: str,
+        timeframe: str,
+        *,
+        start: datetime,
+        end: datetime,
+    ) -> list[KlineRow]:
+        """Fetch klines with open_time in [start, end], ascending order."""
+        if start.tzinfo is None:
+            start = start.replace(tzinfo=timezone.utc)
+        if end.tzinfo is None:
+            end = end.replace(tzinfo=timezone.utc)
+        if start > end:
+            raise ValueError("start must be <= end")
+
+        columns = ", ".join(KLINES_COLUMNS)
+        query = f"""
+            SELECT {columns}
+            FROM {self.full_table_name}
+            WHERE symbol = {{symbol:String}}
+              AND timeframe = {{timeframe:String}}
+              AND open_time >= {{start:DateTime64(3, 'UTC')}}
+              AND open_time <= {{end:DateTime64(3, 'UTC')}}
+            ORDER BY open_time ASC
+        """
+        result = self.client.query(
+            query,
+            parameters={
+                "symbol": symbol,
+                "timeframe": timeframe,
+                "start": start,
+                "end": end,
+            },
+        )
+        return [_parse_kline_row(row) for row in result.result_rows]
 
 
 class ClickHouseClientPool:

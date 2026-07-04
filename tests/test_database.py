@@ -131,6 +131,28 @@ def test_client_not_connected_raises(db_config: DatabaseConfig) -> None:
 
 
 @patch("services.database.client.clickhouse_connect.get_client")
+def test_fetch_klines_range(mock_get_client: MagicMock, db_config: DatabaseConfig, sample_kline: KlineRow) -> None:
+    mock_client = MagicMock()
+    mock_result = MagicMock()
+    mock_result.result_rows = [sample_kline.as_tuple()]
+    mock_client.query.return_value = mock_result
+    mock_get_client.return_value = mock_client
+
+    db = ClickHouseClient(db_config)
+    db.connect()
+    start = sample_kline.open_time
+    end = sample_kline.close_time
+    rows = db.fetch_klines_range("BTCUSDT", "1h", start=start, end=end)
+
+    assert len(rows) == 1
+    assert rows[0].symbol == "BTCUSDT"
+    mock_client.query.assert_called_once()
+    call_params = mock_client.query.call_args[1]["parameters"]
+    assert call_params["symbol"] == "BTCUSDT"
+    assert call_params["timeframe"] == "1h"
+
+
+@patch("services.database.client.clickhouse_connect.get_client")
 def test_client_pool_thread_local_clients(mock_get_client: MagicMock, db_config: DatabaseConfig) -> None:
     mock_client = MagicMock()
     mock_get_client.return_value = mock_client

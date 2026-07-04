@@ -360,6 +360,18 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase22/test_marketplace_reload.py`
 - **Rollback:** Remove reload module; revert CLI reload command; remove reload tests
 
+## Phase 23 / G30 — RL Product Dataset
+
+- **Added:**
+  - `fetch_klines_range(start, end)` on `ClickHouseClient` and `ClickHouseStorageBackend`
+  - `quant_platform/rl_product/` — `dataset/` (`TrainingDatasetLoader`, `EpisodeBuilder`, `EpisodeCache`), `protocols`, `graph`, `pipeline`
+  - `quant_platform/registries/rl_product.py` — `platform.rl` registry group
+  - Plugins: `training_dataset`, `episode_cache` under `quant_platform/plugins/rl/`
+  - `register_rl_product_plugins()` + `pyproject.toml` entry points for `platform.rl`
+- **Changed:** `quant_platform/registries/groups.py` — `ALL_REGISTRY_GROUPS` includes `platform.rl`
+- **Tests:** `tests/platform/rl_product/g30/` + `tests/test_database.py` (`fetch_klines_range`)
+- **Rollback:** Remove `quant_platform/rl_product/` and `quant_platform/plugins/rl/`; revert CH client range method; remove `platform.rl` entry points and registry
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
