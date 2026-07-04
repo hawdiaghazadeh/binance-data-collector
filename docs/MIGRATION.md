@@ -169,6 +169,17 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase7/test_label.py`
 - **Rollback:** Remove `quant_platform/labels/` and `regime_label` plugin; revert `direction_label` stub; remove Phase 7 tests
 
+## Phase 8 / G13 — Observation Registry
+
+- **Frozen:** `ObservationProtocol` v1.0
+- **Plugins:** `candle_observation`, `portfolio_observation`, `risk_observation`
+- **Added:**
+  - `quant_platform/observations/` — candle, portfolio, risk builders + pipeline
+  - `ObservationPipelineBuilder` + `register_observation_plugins()`
+- **Changed:** `candle_observation` upgraded from raw klines stub to normalized OHLC window
+- **Tests:** `tests/platform/phase8/test_observation.py`
+- **Rollback:** Remove `quant_platform/observations/` and portfolio/risk plugins; revert `candle_observation` stub; remove Phase 8 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

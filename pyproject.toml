@@ -65,6 +65,8 @@ regime_label = "quant_platform.plugins.domain.regime_label:factory"
 
 [project.entry-points."platform.observations"]
 candle_observation = "quant_platform.plugins.domain.candle_observation:factory"
+portfolio_observation = "quant_platform.plugins.domain.portfolio_observation:factory"
+risk_observation = "quant_platform.plugins.domain.risk_observation:factory"
 
 [project.entry-points."platform.rewards"]
 profit_reward = "quant_platform.plugins.domain.profit_reward:factory"
