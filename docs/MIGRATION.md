@@ -135,6 +135,18 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase4/test_normalization.py`
 - **Rollback:** Remove `quant_platform/normalizations/` and `z_score` plugin; revert `symbol_normalizer` to stub; remove Phase 4 tests
 
+## Phase 5 / G10 — Indicator Registry
+
+- **Frozen:** `IndicatorProtocol` v1.0
+- **Plugins:** `ema_indicator`, `rsi_indicator`, `macd_indicator`
+- **Added:**
+  - `quant_platform/indicators/` — `compute.py`, `source.py`, `pipeline.py`
+  - `ClickHouseClient.fetch_klines()` + `ClickHouseStorageBackend.fetch_klines()` for indicator data loading
+  - `IndicatorPipelineBuilder` + `register_indicator_plugins()`
+- **Changed:** `ema_indicator` upgraded from stub to production EMA
+- **Tests:** `tests/platform/phase5/test_indicator.py`
+- **Rollback:** Remove `quant_platform/indicators/` and RSI/MACD plugins; revert `fetch_klines`; remove Phase 5 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

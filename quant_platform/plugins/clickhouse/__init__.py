@@ -66,6 +66,18 @@ class ClickHouseStorageBackend:
     def create_pool(self) -> ClickHouseClientPool:
         return ClickHouseClientPool(self._config.database)
 
+    def fetch_klines(
+        self,
+        symbol: str,
+        timeframe: str,
+        *,
+        limit: int = 500,
+    ) -> list[KlineRow]:
+        if self._client is None:
+            self.connect()
+        assert self._client is not None
+        return self._client.fetch_klines(symbol, timeframe, limit=limit)
+
 
 def factory(*, config: Any = None) -> ClickHouseStorageBackend:
     return ClickHouseStorageBackend(config=config)

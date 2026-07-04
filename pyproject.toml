@@ -51,6 +51,8 @@ z_score = "quant_platform.plugins.domain.z_score:factory"
 
 [project.entry-points."platform.indicators"]
 ema_indicator = "quant_platform.plugins.domain.ema_indicator:factory"
+rsi_indicator = "quant_platform.plugins.domain.rsi_indicator:factory"
+macd_indicator = "quant_platform.plugins.domain.macd_indicator:factory"
 
 [project.entry-points."platform.market_structures"]
 bos_choch = "quant_platform.plugins.domain.bos_choch:factory"

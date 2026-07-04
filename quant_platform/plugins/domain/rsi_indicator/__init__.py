@@ -1,43 +1,43 @@
-"""EMA indicator plugin (Phase 5)."""
+"""RSI indicator plugin (Phase 5)."""
 
 from __future__ import annotations
 
 from quant_platform.core.context import DataEnvelope, PipelineContext
 from quant_platform.core.plugin import PluginMetadata
-from quant_platform.indicators.compute import compute_ema
+from quant_platform.indicators.compute import compute_rsi
 from quant_platform.indicators.source import resolve_closes
 
 PLUGIN_METADATA = PluginMetadata(
-    name="ema_indicator",
+    name="rsi_indicator",
     version="1.0.0",
     platform_version_compatibility=">=1.0.0,<2.0.0",
-    description="Exponential moving average on close prices",
+    description="Wilder RSI on close prices",
     input_types=["klines", "ohlc"],
-    output_types=["ema"],
+    output_types=["rsi"],
     registry_group="platform.indicators",
 )
 
 
-class EmaIndicator:
-    def __init__(self, period: int = 20) -> None:
+class RsiIndicator:
+    def __init__(self, period: int = 14) -> None:
         self._period = period
 
     def compute(self, ctx: PipelineContext) -> None:
         closes = resolve_closes(ctx)
-        ema = compute_ema(closes, self._period)
+        rsi = compute_rsi(closes, self._period)
         ctx.emit(
             DataEnvelope(
-                type_key="ema",
-                payload=ema,
+                type_key="rsi",
+                payload=rsi,
                 metadata={"period": self._period},
             )
         )
 
 
-def factory(*, period: int = 20, config: dict | None = None, **kwargs) -> EmaIndicator:
+def factory(*, period: int = 14, config: dict | None = None, **kwargs) -> RsiIndicator:
     if config and "period" in config:
         period = int(config["period"])
-    return EmaIndicator(period=period)
+    return RsiIndicator(period=period)
 
 
 factory.PLUGIN_METADATA = PLUGIN_METADATA  # type: ignore[attr-defined]

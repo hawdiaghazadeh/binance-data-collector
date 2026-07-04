@@ -221,6 +221,56 @@ class ClickHouseClient:
         result = self.client.query(query, parameters=params)
         return int(result.first_row[0])
 
+    def fetch_klines(
+        self,
+        symbol: str,
+        timeframe: str,
+        *,
+        limit: int = 500,
+    ) -> list[KlineRow]:
+        """Fetch the most recent klines in ascending open_time order."""
+        if limit < 1:
+            raise ValueError("limit must be >= 1")
+
+        columns = ", ".join(KLINES_COLUMNS)
+        query = f"""
+            SELECT {columns}
+            FROM {self.full_table_name}
+            WHERE symbol = {{symbol:String}} AND timeframe = {{timeframe:String}}
+            ORDER BY open_time DESC
+            LIMIT {{limit:UInt32}}
+        """
+        result = self.client.query(
+            query,
+            parameters={"symbol": symbol, "timeframe": timeframe, "limit": limit},
+        )
+        rows: list[KlineRow] = []
+        for row in reversed(result.result_rows):
+            open_time = row[2]
+            close_time = row[8]
+            if isinstance(open_time, datetime) and open_time.tzinfo is None:
+                open_time = open_time.replace(tzinfo=timezone.utc)
+            if isinstance(close_time, datetime) and close_time.tzinfo is None:
+                close_time = close_time.replace(tzinfo=timezone.utc)
+            rows.append(
+                KlineRow(
+                    symbol=str(row[0]),
+                    timeframe=str(row[1]),
+                    open_time=open_time,
+                    open=float(row[3]),
+                    high=float(row[4]),
+                    low=float(row[5]),
+                    close=float(row[6]),
+                    volume=float(row[7]),
+                    close_time=close_time,
+                    quote_volume=float(row[9]),
+                    trade_count=int(row[10]),
+                    taker_buy_volume=float(row[11]),
+                    taker_buy_quote_volume=float(row[12]),
+                )
+            )
+        return rows
+
 
 class ClickHouseClientPool:
     """
