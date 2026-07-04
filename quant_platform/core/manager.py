@@ -7,12 +7,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from quant_platform.core.config import ConfigValidationError, validate_plugin_config
-from quant_platform.core.discovery import (
-    DiscoveryConfig,
-    discover_entry_points,
-    discover_package_plugins,
-    flush_pending,
-)
+from quant_platform.core.discovery import DEFAULT_SCAN_PACKAGES, iter_discovery_sources
 from quant_platform.core.instances import InstanceManager
 from quant_platform.core.plugin import DisableReason, PluginLifecycle, PluginMetadata, PluginStatus
 from quant_platform.core.registry import BaseRegistry, PluginUnavailableError, RegistryError
@@ -24,6 +19,9 @@ class PluginsConfig:
     fail_fast: bool = False
     enabled: list[str] | None = None
     disabled: list[str] = field(default_factory=list)
+    scan_packages: list[str] = field(default_factory=lambda: list(DEFAULT_SCAN_PACKAGES))
+    dynamic_modules: list[str] = field(default_factory=list)
+    reflection_modules: list[str] = field(default_factory=list)
 
 
 class PluginManager:
@@ -56,27 +54,30 @@ class PluginManager:
         self,
         group: str,
         *,
-        scan_package: str | None = None,
+        scan_packages: list[str] | None = None,
+        dynamic_modules: list[str] | None = None,
+        reflection_modules: list[str] | None = None,
     ) -> int:
         """Discover and register plugins for a group. Returns count registered."""
         reg = self.registry(group)
         count = 0
+        packages = scan_packages if scan_packages is not None else self._plugins_config.scan_packages
+        dynamic = dynamic_modules if dynamic_modules is not None else self._plugins_config.dynamic_modules
+        reflection = (
+            reflection_modules if reflection_modules is not None else self._plugins_config.reflection_modules
+        )
 
-        for meta, factory in discover_entry_points(group):
+        for meta, factory in iter_discovery_sources(
+            group,
+            scan_packages=packages,
+            dynamic_modules=dynamic,
+            reflection_modules=reflection,
+        ):
+            if meta.name in {m.name for m in reg.list_plugins()}:
+                continue
             if self._should_register(meta.name):
                 self._safe_register(reg, meta, factory)
                 count += 1
-
-        for meta, factory in flush_pending(group):
-            if self._should_register(meta.name):
-                self._safe_register(reg, meta, factory)
-                count += 1
-
-        if scan_package:
-            for meta, factory in discover_package_plugins(scan_package, group):
-                if self._should_register(meta.name):
-                    self._safe_register(reg, meta, factory)
-                    count += 1
 
         return count
 
@@ -239,5 +240,9 @@ class PluginManager:
                 fail_fast=getattr(plugins_section, "fail_fast", False),
                 enabled=getattr(plugins_section, "enabled", None),
                 disabled=getattr(plugins_section, "disabled", []) or [],
+                scan_packages=getattr(plugins_section, "scan_packages", None)
+                or list(DEFAULT_SCAN_PACKAGES),
+                dynamic_modules=getattr(plugins_section, "dynamic_modules", []) or [],
+                reflection_modules=getattr(plugins_section, "reflection_modules", []) or [],
             ),
         )

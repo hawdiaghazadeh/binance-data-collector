@@ -104,7 +104,7 @@ def bootstrap_pipeline(
     """Discover, register, resolve, and compile the pipeline for runtime execution."""
     graph_enabled = _resolve_graph_enabled(app_config, resolve_graph)
     manager = create_plugin_manager(app_config)
-    for group in (DATA_PROVIDER_GROUP, STORAGE_BACKEND_GROUP, PARSER_GROUP):
+    for group in PIPELINE_GROUPS:
         manager.discover(group)
     register_pipeline_plugins(manager, app_config)
     load_pipeline_plugins(manager, resolve_graph=graph_enabled)

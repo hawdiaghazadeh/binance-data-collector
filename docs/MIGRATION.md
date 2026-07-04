@@ -72,6 +72,19 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/test_composite.py`
 - **Rollback:** Remove `strategy.py` and `observation.py` from `quant_platform/composite/`
 
+## Discovery Expansion (G5) — Dynamic Import & Reflection
+
+- **Added:**
+  - `discover_dynamic_import()` — explicit module path loading (`plugins.dynamic_modules`)
+  - `discover_reflection_plugins()` — class-level `PLUGIN_METADATA` scan (`plugins.reflection_modules`)
+  - `iter_discovery_sources()` — unified startup discovery iterator
+  - `plugins.scan_packages` config (default `quant_platform.plugins`)
+- **Changed:**
+  - `PluginManager.discover()` uses all mechanisms and skips duplicate plugin names
+  - `bootstrap_pipeline()` discovers all pipeline groups with package scan enabled
+- **Tests:** `tests/platform/test_discovery_g5.py`
+- **Rollback:** Remove dynamic/reflection discovery functions; clear config lists; revert bootstrap discover loop
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

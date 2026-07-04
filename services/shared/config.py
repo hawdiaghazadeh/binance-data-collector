@@ -97,6 +97,9 @@ class PluginsConfigSection(BaseModel):
     resolve_graph: bool = True
     enabled: list[str] | None = None
     disabled: list[str] = Field(default_factory=list)
+    scan_packages: list[str] = Field(default_factory=lambda: ["quant_platform.plugins"])
+    dynamic_modules: list[str] = Field(default_factory=list)
+    reflection_modules: list[str] = Field(default_factory=list)
 
 
 class AppConfig(BaseModel):
