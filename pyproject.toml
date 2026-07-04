@@ -84,6 +84,7 @@ futures_env = "quant_platform.plugins.domain.futures_env:factory"
 
 [project.entry-points."platform.strategies"]
 rule_based = "quant_platform.plugins.domain.rule_based:factory"
+smc_ict = "quant_platform.plugins.domain.smc_ict:factory"
 
 [project.entry-points."platform.executions"]
 simulation_execution = "quant_platform.plugins.domain.simulation_execution:factory"

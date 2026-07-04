@@ -214,6 +214,18 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase11/test_environment.py`
 - **Rollback:** Remove `quant_platform/environments/` and `futures_env` plugin; revert `spot_env` stub; remove Phase 11 tests
 
+## Phase 12 / G17 — Strategy Registry
+
+- **Frozen:** `StrategyProtocol` v1.0
+- **Plugins:** `rule_based`, `smc_ict`
+- **Added:**
+  - `quant_platform/strategies/` — rule engine, SMC/ICT skeleton, pipeline
+  - `StrategyPipelineBuilder` + `register_strategy_plugins()`
+  - Weighted composition via existing `CompositeStrategy`
+- **Changed:** `rule_based` upgraded from empty stub to EMA/RSI rule signals
+- **Tests:** `tests/platform/phase12/test_strategy.py`
+- **Rollback:** Remove `quant_platform/strategies/` and `smc_ict` plugin; revert `rule_based` stub; remove Phase 12 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
