@@ -70,6 +70,8 @@ risk_observation = "quant_platform.plugins.domain.risk_observation:factory"
 
 [project.entry-points."platform.rewards"]
 profit_reward = "quant_platform.plugins.domain.profit_reward:factory"
+sharpe_reward = "quant_platform.plugins.domain.sharpe_reward:factory"
+drawdown_penalty = "quant_platform.plugins.domain.drawdown_penalty:factory"
 
 [project.entry-points."platform.actions"]
 discrete_action = "quant_platform.plugins.domain.discrete_action:factory"

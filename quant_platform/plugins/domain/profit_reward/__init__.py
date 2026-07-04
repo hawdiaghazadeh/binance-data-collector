@@ -1,23 +1,29 @@
-"""Reference domain plugin: profit_reward."""
+"""Profit reward plugin (Phase 9)."""
 
 from __future__ import annotations
 
 from quant_platform.core.context import PipelineContext
+from quant_platform.core.plugin import PluginMetadata
+from quant_platform.rewards.profit import calculate_profit_reward
 
-from quant_platform.plugins.domain._helpers import attach_factory_metadata, reference_meta
-
-PLUGIN_METADATA = reference_meta("profit_reward", "platform.rewards")
+PLUGIN_METADATA = PluginMetadata(
+    name="profit_reward",
+    version="1.0.0",
+    platform_version_compatibility=">=1.0.0,<2.0.0",
+    description="Step PnL reward from pnl or portfolio_state context",
+    input_types=["pnl", "step_pnl", "portfolio_state"],
+    output_types=["reward"],
+    registry_group="platform.rewards",
+)
 
 
 class ProfitReward:
-
     def calculate(self, ctx: PipelineContext) -> float:
-        pnl = ctx.optional("pnl")
-        return float(pnl.payload) if pnl else 0.0
+        return calculate_profit_reward(ctx)
 
 
 def factory(**kwargs) -> ProfitReward:
     return ProfitReward()
 
 
-attach_factory_metadata(factory, PLUGIN_METADATA)
+factory.PLUGIN_METADATA = PLUGIN_METADATA  # type: ignore[attr-defined]

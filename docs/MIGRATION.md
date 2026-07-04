@@ -180,6 +180,18 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/phase8/test_observation.py`
 - **Rollback:** Remove `quant_platform/observations/` and portfolio/risk plugins; revert `candle_observation` stub; remove Phase 8 tests
 
+## Phase 9 / G14 — Reward Registry
+
+- **Frozen:** `RewardProtocol` v1.0
+- **Plugins:** `profit_reward`, `sharpe_reward`, `drawdown_penalty`
+- **Added:**
+  - `quant_platform/rewards/` — profit, sharpe, drawdown + pipeline
+  - `RewardPipelineBuilder` + `register_reward_plugins()`
+  - Weighted composition via existing `CompositeReward`
+- **Changed:** `profit_reward` upgraded from stub to step PnL reward
+- **Tests:** `tests/platform/phase9/test_reward.py`
+- **Rollback:** Remove `quant_platform/rewards/` and sharpe/drawdown plugins; revert `profit_reward` stub; remove Phase 9 tests
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`
