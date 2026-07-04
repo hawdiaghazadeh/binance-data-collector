@@ -33,6 +33,20 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - Reference plugins in `platform/plugins/domain_reference.py`
 - Each registry group under `platform.registries.domain`
 
+## Phase 2A Prep (G1) — Service Testability Refactor
+
+- **Goal:** Extract injectable seams in `services/` without changing download/import behavior.
+- **Added:**
+  - `services/downloader/ports.py` — `DownloadPathResolver`, `BinanceDownloadPaths`
+  - `services/importer/ports.py` — `KlineStorage`, `StoragePool`
+  - `services/database/batch.py` — pure `klines_to_tuples()`
+  - `services/importer/csv_parser.py` — `DefaultKlineCsvParser`, `parse_csv_bytes()`
+- **Changed:**
+  - `DownloadWorker` accepts optional `path_resolver`
+  - `ImportWorker` accepts `storage_pool: StoragePool` (was `db_pool: ClickHouseClientPool`)
+- **Tests:** `tests/test_services_seams.py`
+- **Rollback:** Revert worker constructors to concrete types only; remove `ports.py` and `batch.py`
+
 ## Backward Compatibility
 
 - `config/config.yaml` without `plugins:` section works unchanged

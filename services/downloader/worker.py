@@ -9,11 +9,7 @@ from typing import TYPE_CHECKING
 import httpx
 import structlog
 
-from services.downloader.discovery import (
-    build_checksum_url,
-    build_download_url,
-    local_zip_path,
-)
+from services.downloader.ports import BinanceDownloadPaths, DownloadPathResolver
 from services.shared.checksum import parse_checksum_file, verify_file_checksum
 from services.shared.models import DownloadStats, MonthlyFile
 
@@ -30,8 +26,14 @@ class DownloadWorker:
     Supports resumable downloads, checksum verification, and exponential backoff retries.
     """
 
-    def __init__(self, config: AppConfig) -> None:
+    def __init__(
+        self,
+        config: AppConfig,
+        *,
+        path_resolver: DownloadPathResolver | None = None,
+    ) -> None:
         self._config = config
+        self._paths = path_resolver or BinanceDownloadPaths()
         self._semaphore = asyncio.Semaphore(config.downloader.max_concurrent)
         self._stats = DownloadStats()
         self._shutdown = False
@@ -83,7 +85,7 @@ class DownloadWorker:
         Skips if file exists and passes checksum verification.
         Returns True on success or skip, False on failure.
         """
-        dest = Path(local_zip_path(self._config, monthly_file))
+        dest = self._paths.local_path(self._config, monthly_file)
         dest.parent.mkdir(parents=True, exist_ok=True)
 
         if dest.exists() and dest.stat().st_size > 0:
@@ -94,7 +96,7 @@ class DownloadWorker:
             logger.warning("file_exists_invalid_checksum", file=monthly_file.filename)
             dest.unlink(missing_ok=True)
 
-        url = build_download_url(self._config, monthly_file)
+        url = self._paths.download_url(self._config, monthly_file)
         backoff = self._config.downloader.retry_backoff_seconds
 
         for attempt in range(1, self._config.downloader.retry_count + 2):
@@ -171,7 +173,7 @@ class DownloadWorker:
         if not self._config.downloader.verify_checksum:
             return True
 
-        checksum_url = build_checksum_url(self._config, monthly_file)
+        checksum_url = self._paths.checksum_url(self._config, monthly_file)
         try:
             response = await client.get(checksum_url)
             if response.status_code == 404:
@@ -197,7 +199,7 @@ class DownloadWorker:
         monthly_file: MonthlyFile,
     ) -> str | None:
         """Fetch expected SHA256 digest for a file, if available."""
-        checksum_url = build_checksum_url(self._config, monthly_file)
+        checksum_url = self._paths.checksum_url(self._config, monthly_file)
         try:
             response = await client.get(checksum_url)
             if response.status_code == 404:

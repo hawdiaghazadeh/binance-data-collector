@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 
 import structlog
 
-from services.database.client import ClickHouseClient, ClickHouseClientPool
+from services.importer.ports import KlineStorage, StoragePool
 from services.importer.zip_reader import open_csv_reader
 from services.shared.models import ImportStats, ValidationResult
 from services.shared.validation import iter_kline_batches
@@ -46,9 +46,9 @@ class ImportWorker:
     - Only fully successful imports are marked complete.
     """
 
-    def __init__(self, config: AppConfig, db_pool: ClickHouseClientPool) -> None:
+    def __init__(self, config: AppConfig, storage_pool: StoragePool) -> None:
         self._config = config
-        self._db_pool = db_pool
+        self._storage_pool = storage_pool
         self._stats = ImportStats()
         self._stats_lock = threading.Lock()
         self._shutdown = False
@@ -97,7 +97,7 @@ class ImportWorker:
         )
 
         if self._config.importer.serial_import:
-            db = self._db_pool.get()
+            db = self._storage_pool.get()
             for zip_path in zip_files:
                 if self._shutdown:
                     logger.info("import_interrupted")
@@ -126,9 +126,9 @@ class ImportWorker:
 
         return self._stats
 
-    def _import_file(self, zip_path: Path, db: ClickHouseClient | None = None) -> None:
+    def _import_file(self, zip_path: Path, db: KlineStorage | None = None) -> None:
         """Import a single ZIP file with retries and rollback on failure."""
-        client = db or self._db_pool.get()
+        client = db or self._storage_pool.get()
         file_key = str(zip_path.relative_to(self._config.paths.download_path))
 
         if client.is_file_imported(file_key):
@@ -192,7 +192,7 @@ class ImportWorker:
 
     def _rollback_month(
         self,
-        db: ClickHouseClient,
+        db: KlineStorage,
         symbol: str,
         timeframe: str,
         year: int,
@@ -209,7 +209,7 @@ class ImportWorker:
 
     def _process_zip(
         self,
-        db: ClickHouseClient,
+        db: KlineStorage,
         zip_path: Path,
         symbol: str,
         timeframe: str,

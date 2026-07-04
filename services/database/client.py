@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Sequence
 import clickhouse_connect
 import structlog
 
+from services.database.batch import klines_to_tuples
 from services.database.schema import KLINES_COLUMNS, ensure_schema
 from services.shared.models import KlineRow
 from services.shared.time_utils import month_range_utc
@@ -92,7 +93,7 @@ class ClickHouseClient:
         if not rows:
             return 0
 
-        data = [row.as_tuple() for row in rows]
+        data = klines_to_tuples(rows)
         self.client.insert(
             self.full_table_name,
             data,
