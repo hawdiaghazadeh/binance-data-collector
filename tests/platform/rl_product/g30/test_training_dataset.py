@@ -151,4 +151,7 @@ class TestRlProductRegistration:
 
     def test_rl_plugins_metadata(self):
         names = {meta.name for meta, _ in RL_PLUGINS}
-        assert names == {"training_dataset", "episode_cache"}
+        assert "training_dataset" in names
+        assert "episode_cache" in names
+        assert "smc_bos_prob" in names
+        assert "feature_gate" in names

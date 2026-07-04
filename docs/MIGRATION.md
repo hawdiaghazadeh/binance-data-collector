@@ -372,6 +372,15 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Tests:** `tests/platform/rl_product/g30/` + `tests/test_database.py` (`fetch_klines_range`)
 - **Rollback:** Remove `quant_platform/rl_product/` and `quant_platform/plugins/rl/`; revert CH client range method; remove `platform.rl` entry points and registry
 
+## Phase 23 / G31 — RL Product Perception
+
+- **Added:**
+  - `quant_platform/rl_product/perception/` — SMC/RTM/ICT probabilistic hints, `PerceptionCompressor`, `FeatureGate`, `PerceptionPipeline`
+  - 11 hint plugins: `smc_*_prob`(4), `rtm_*`(4), `ict_*_prob`(3)
+  - `perception_compressor`, `feature_gate` plugins under `platform.rl`
+- **Tests:** `tests/platform/rl_product/g31/` — bounded outputs, no lookahead, no raw levels, gate zeros
+- **Rollback:** Remove `rl_product/perception/` and G31 plugins; revert pyproject entry points
+
 ## Phases 4–21 — Domain Registries
 
 - Reference plugins in `platform/plugins/domain_reference.py`

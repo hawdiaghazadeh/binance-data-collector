@@ -146,6 +146,19 @@ schema_config = "quant_platform.plugins.domain.schema_config:factory"
 [project.entry-points."platform.rl"]
 training_dataset = "quant_platform.plugins.rl.training_dataset:factory"
 episode_cache = "quant_platform.plugins.rl.episode_cache:factory"
+smc_bos_prob = "quant_platform.plugins.rl.smc_bos_prob:factory"
+smc_choch_prob = "quant_platform.plugins.rl.smc_choch_prob:factory"
+smc_ob_validity_prob = "quant_platform.plugins.rl.smc_ob_validity_prob:factory"
+smc_fvg_fill_prob = "quant_platform.plugins.rl.smc_fvg_fill_prob:factory"
+rtm_sd_strength = "quant_platform.plugins.rl.rtm_sd_strength:factory"
+rtm_sweep_prob = "quant_platform.plugins.rl.rtm_sweep_prob:factory"
+rtm_compression_prob = "quant_platform.plugins.rl.rtm_compression_prob:factory"
+rtm_flip_prob = "quant_platform.plugins.rl.rtm_flip_prob:factory"
+ict_session_prob = "quant_platform.plugins.rl.ict_session_prob:factory"
+ict_killzone_prob = "quant_platform.plugins.rl.ict_killzone_prob:factory"
+ict_premium_discount_prob = "quant_platform.plugins.rl.ict_premium_discount_prob:factory"
+perception_compressor = "quant_platform.plugins.rl.perception_compressor:factory"
+feature_gate = "quant_platform.plugins.rl.feature_gate:factory"
 
 [tool.setuptools.packages.find]
 where = ["."]

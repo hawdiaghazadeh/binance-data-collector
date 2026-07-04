@@ -6,12 +6,41 @@ from typing import Any, Callable
 
 from quant_platform.core.manager import PluginManager
 from quant_platform.core.plugin import PluginMetadata
-from quant_platform.plugins.rl import episode_cache, training_dataset
+from quant_platform.plugins.rl import (
+    episode_cache,
+    feature_gate,
+    ict_killzone_prob,
+    ict_premium_discount_prob,
+    ict_session_prob,
+    perception_compressor,
+    rtm_compression_prob,
+    rtm_flip_prob,
+    rtm_sd_strength,
+    rtm_sweep_prob,
+    smc_bos_prob,
+    smc_choch_prob,
+    smc_fvg_fill_prob,
+    smc_ob_validity_prob,
+    training_dataset,
+)
 from quant_platform.registries.rl_product import RL_GROUP, rl_registry
 
 RL_PLUGIN_MODULES: list[Any] = [
     training_dataset,
     episode_cache,
+    smc_bos_prob,
+    smc_choch_prob,
+    smc_ob_validity_prob,
+    smc_fvg_fill_prob,
+    rtm_sd_strength,
+    rtm_sweep_prob,
+    rtm_compression_prob,
+    rtm_flip_prob,
+    ict_session_prob,
+    ict_killzone_prob,
+    ict_premium_discount_prob,
+    perception_compressor,
+    feature_gate,
 ]
 
 RL_PLUGINS: list[tuple[PluginMetadata, Callable[..., Any]]] = [
