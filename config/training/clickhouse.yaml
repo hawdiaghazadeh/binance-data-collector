@@ -1,0 +1,49 @@
+# Train on klines imported into ClickHouse — set training.symbol to any imported pair
+training:
+  symbol: BTCUSDT
+  timeframe: 1h
+  market: spot
+  initial_equity: 10000
+  episode_length: 500
+  episode_stride: 250
+  train_start: "2022-01-01"
+  train_end: "2024-06-30"
+  rollout_steps: 128
+  total_timesteps: 10000
+  seed: 42
+
+observation:
+  dim: 128
+  context_dims: 16
+  schema_version: "1.0"
+
+perception:
+  master_gate: 1.0
+
+execution:
+  fee_bps: 10
+  spread_bps: 5
+  slippage_bps: 3
+
+reward:
+  max_context_reward_weight: 0.05
+  clip_sigma: 5.0
+
+agent:
+  price_trunk_hidden: [256, 128]
+  context_trunk_hidden: [32, 16]
+  portfolio_trunk_hidden: [32, 16]
+  total_timesteps: 10000
+  ppo_epochs: 4
+
+dataset:
+  synthetic: false
+  train_ratio: 0.70
+  val_ratio: 0.15
+
+evaluation:
+  walk_forward_folds: 4
+  train_timesteps: 5000
+
+deploy:
+  live_approved: false

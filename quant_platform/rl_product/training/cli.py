@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -69,10 +70,46 @@ def _build_synthetic_episodes(config: dict[str, Any]) -> list:
     ]
 
 
-def run_train(config: dict[str, Any], *, steps: int | None = None, checkpoint_dir: Path | None = None) -> dict:
-    episodes = _build_synthetic_episodes(config)
-    if config.get("dataset", {}).get("synthetic", True) is False:
-        raise NotImplementedError("ClickHouse dataset loading is configured for G30 plugin path only")
+def _load_clickhouse_episodes(config: dict[str, Any], *, app_config_path: Path) -> list:
+    from quant_platform.plugins.rl.training_dataset import TrainingDatasetPlugin
+    from services.database.client import ClickHouseClient
+    from services.shared.config import load_config as load_app_config
+
+    app_cfg = load_app_config(app_config_path)
+    db = ClickHouseClient(app_cfg.database)
+    db.connect(ensure_schema_exists=False)
+    try:
+        plugin = TrainingDatasetPlugin(storage_backend=db)
+        episodes = plugin.load_episodes(config)
+    finally:
+        db.close()
+    if not episodes:
+        raise ValueError(
+            "no episodes loaded from ClickHouse — verify train_start/train_end and imported klines"
+        )
+    return episodes
+
+
+def load_episodes(
+    config: dict[str, Any],
+    *,
+    app_config_path: Path | None = None,
+) -> list:
+    dataset = config.get("dataset", {})
+    if dataset.get("synthetic", True):
+        return _build_synthetic_episodes(config)
+    path = app_config_path or Path(os.environ.get("CONFIG_PATH", "config/config.yaml"))
+    return _load_clickhouse_episodes(config, app_config_path=path)
+
+
+def run_train(
+    config: dict[str, Any],
+    *,
+    steps: int | None = None,
+    checkpoint_dir: Path | None = None,
+    app_config_path: Path | None = None,
+) -> dict:
+    episodes = load_episodes(config, app_config_path=app_config_path)
     loop = OnlineTrainingLoop.compile(config, episodes, checkpoint_dir=checkpoint_dir)
     metrics = loop.run(total_timesteps=steps)
     return {
@@ -81,6 +118,8 @@ def run_train(config: dict[str, Any], *, steps: int | None = None, checkpoint_di
         "episodes": metrics.episodes,
         "last_loss": metrics.last_loss,
         "graph_schema_hash": loop.graph_schema_hash,
+        "episode_count": len(episodes),
+        "synthetic": config.get("dataset", {}).get("synthetic", True),
     }
 
 
@@ -97,11 +136,22 @@ def main(argv: list[str] | None = None) -> int:
         default=Path(".quant_platform/checkpoints"),
         help="Directory for periodic checkpoints",
     )
+    train_parser.add_argument(
+        "--app-config",
+        type=Path,
+        default=None,
+        help="App config with database section (default: CONFIG_PATH or config/config.yaml)",
+    )
 
     args = parser.parse_args(argv)
     if args.command == "train":
         config = load_config(args.config)
-        result = run_train(config, steps=args.steps, checkpoint_dir=args.checkpoint_dir)
+        result = run_train(
+            config,
+            steps=args.steps,
+            checkpoint_dir=args.checkpoint_dir,
+            app_config_path=args.app_config,
+        )
         print(json.dumps(result, indent=2))
         return 0
     return 1

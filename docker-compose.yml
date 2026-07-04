@@ -1,3 +1,18 @@
+x-platform: &platform
+  image: crypto-platform:latest
+  build:
+    context: .
+    dockerfile: docker/platform/Dockerfile
+  networks:
+    - crypto_net
+  volumes:
+    - ./config:/config:ro
+    - ./downloads:/downloads
+    - ./logs:/logs
+    - ./data:/app/data
+  environment:
+    CONFIG_PATH: /config/config.yaml
+
 services:
   clickhouse:
     image: clickhouse/clickhouse-server:24.8
@@ -11,8 +26,8 @@ services:
       CLICKHOUSE_PASSWORD: ${CLICKHOUSE_PASSWORD:-}
       CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
     volumes:
-      - clickhouse_data:/var/lib/clickhouse
-      - clickhouse_logs:/var/log/clickhouse-server
+      - ./data/clickhouse:/var/lib/clickhouse
+      - ./data/clickhouse-logs:/var/log/clickhouse-server
       - ./docker/clickhouse/init:/docker-entrypoint-initdb.d:ro
     ulimits:
       nofile:
@@ -29,34 +44,19 @@ services:
       - crypto_net
 
   downloader:
-    build:
-      context: .
-      dockerfile: docker/downloader/Dockerfile
+    <<: *platform
     container_name: crypto_downloader
-    environment:
-      CONFIG_PATH: /config/config.yaml
-    volumes:
-      - ./config:/config:ro
-      - ./downloads:/downloads
-      - ./logs:/logs
+    entrypoint: ["/entrypoint.sh", "downloader"]
     restart: "no"
-    networks:
-      - crypto_net
     profiles:
+      - full
       - pipeline
       - download
 
   importer:
-    build:
-      context: .
-      dockerfile: docker/importer/Dockerfile
+    <<: *platform
     container_name: crypto_importer
-    environment:
-      CONFIG_PATH: /config/config.yaml
-    volumes:
-      - ./config:/config:ro
-      - ./downloads:/downloads
-      - ./logs:/logs
+    entrypoint: ["/entrypoint.sh", "importer"]
     deploy:
       resources:
         limits:
@@ -68,11 +68,29 @@ services:
         condition: service_completed_successfully
         required: false
     restart: "no"
-    networks:
-      - crypto_net
     profiles:
+      - full
       - pipeline
       - import
+
+  rl-train:
+    <<: *platform
+    container_name: crypto_rl_train
+    entrypoint: ["/entrypoint.sh", "train"]
+    environment:
+      TRAIN_CONFIG: ${TRAIN_CONFIG:-/config/training/smoke.yaml}
+      TRAIN_STEPS: ${TRAIN_STEPS:-128}
+      CHECKPOINT_DIR: /app/data/checkpoints
+    depends_on:
+      clickhouse:
+        condition: service_healthy
+      importer:
+        condition: service_completed_successfully
+        required: false
+    restart: "no"
+    profiles:
+      - full
+      - train
 
   grafana:
     image: grafana/grafana:11.4.0
@@ -86,7 +104,7 @@ services:
       GF_USERS_ALLOW_SIGN_UP: "false"
       GF_SERVER_ROOT_URL: "%(protocol)s://%(domain)s:%(http_port)s/"
     volumes:
-      - grafana_data:/var/lib/grafana
+      - ./data/grafana:/var/lib/grafana
       - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
       - ./docker/grafana/dashboards:/var/lib/grafana/dashboards:ro
     depends_on:
@@ -98,14 +116,11 @@ services:
       timeout: 5s
       retries: 5
       start_period: 30s
-    restart: 'no'
+    restart: unless-stopped
     networks:
       - crypto_net
-
-volumes:
-  clickhouse_data:
-  clickhouse_logs:
-  grafana_data:
+    profiles:
+      - grafana
 
 networks:
   crypto_net:

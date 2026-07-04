@@ -1,0 +1,40 @@
+# Synthetic smoke train — no ClickHouse data required
+training:
+  symbol: BTCUSDT
+  timeframe: 1h
+  market: spot
+  initial_equity: 10000
+  episode_length: 64
+  rollout_steps: 32
+  total_timesteps: 128
+  seed: 42
+
+observation:
+  dim: 128
+  context_dims: 16
+  schema_version: "1.0"
+
+perception:
+  master_gate: 1.0
+
+execution:
+  fee_bps: 10
+  spread_bps: 5
+  slippage_bps: 3
+
+reward:
+  max_context_reward_weight: 0.05
+  clip_sigma: 5.0
+
+agent:
+  price_trunk_hidden: [64, 32]
+  context_trunk_hidden: [16, 8]
+  portfolio_trunk_hidden: [16, 8]
+  total_timesteps: 128
+  ppo_epochs: 2
+
+dataset:
+  synthetic: true
+
+deploy:
+  live_approved: false

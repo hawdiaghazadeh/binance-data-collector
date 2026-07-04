@@ -45,3 +45,26 @@ def test_quant_train_cli_smoke(tmp_path: Path, capsys):
     out = json.loads(capsys.readouterr().out)
     assert out["timesteps"] >= 16
     assert "graph_schema_hash" in out
+    assert out.get("synthetic") is True
+
+
+def test_load_episodes_clickhouse_path(monkeypatch):
+    from quant_platform.rl_product.training.cli import load_episodes
+
+    captured: dict = {}
+
+    def fake_load(config, *, app_config_path):
+        captured["path"] = app_config_path
+        from tests.platform.rl_product.g35.conftest import make_episode
+
+        return [make_episode()]
+
+    monkeypatch.setattr(
+        "quant_platform.rl_product.training.cli._load_clickhouse_episodes",
+        fake_load,
+    )
+    config = train_config()
+    config["dataset"] = {"synthetic": False}
+    episodes = load_episodes(config, app_config_path=Path("custom/config.yaml"))
+    assert len(episodes) == 1
+    assert captured["path"] == Path("custom/config.yaml")
