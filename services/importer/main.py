@@ -5,7 +5,8 @@ from __future__ import annotations
 import signal
 import sys
 
-from services.database.client import ClickHouseClient, ClickHouseClientPool
+from services.database.client import ClickHouseClient
+from quant_platform.bootstrap import bootstrap_pipeline, get_storage_backend
 from services.importer.worker import ImportWorker
 from services.shared.config import load_config
 from services.shared.logging import setup_logging
@@ -22,7 +23,10 @@ def run_importer() -> int:
         log_to_file=config.logging.log_to_file,
     )
 
-    db_pool = ClickHouseClientPool(config.database)
+    db_pool = None
+    manager = bootstrap_pipeline(config)
+    storage = get_storage_backend(manager, config)
+    db_pool = storage.create_pool()
     worker = ImportWorker(config, db_pool)
 
     def _handle_signal(*_) -> None:

@@ -89,6 +89,15 @@ class LoggingConfig(BaseModel):
     log_to_file: bool = True
 
 
+class PluginsConfigSection(BaseModel):
+    """Optional platform plugin configuration."""
+
+    safe_mode: bool = True
+    fail_fast: bool = False
+    enabled: list[str] | None = None
+    disabled: list[str] = Field(default_factory=list)
+
+
 class AppConfig(BaseModel):
     """Root application configuration."""
 
@@ -100,6 +109,7 @@ class AppConfig(BaseModel):
     downloader: DownloaderConfig = Field(default_factory=DownloaderConfig)
     importer: ImporterConfig = Field(default_factory=ImporterConfig)
     logging: LoggingConfig = Field(default_factory=LoggingConfig)
+    plugins: PluginsConfigSection | None = None
 
     @field_validator("symbols", mode="before")
     @classmethod

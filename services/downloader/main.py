@@ -9,8 +9,7 @@ import sys
 import httpx
 from tqdm import tqdm
 
-from services.downloader.discovery import discover_monthly_files
-from services.downloader.worker import DownloadWorker
+from quant_platform.bootstrap import bootstrap_pipeline, get_data_provider
 from services.shared.config import load_config
 from services.shared.logging import setup_logging
 
@@ -29,7 +28,9 @@ async def run_downloader() -> int:
     config.paths.download_path.mkdir(parents=True, exist_ok=True)
     config.paths.state_path.mkdir(parents=True, exist_ok=True)
 
-    worker = DownloadWorker(config)
+    manager = bootstrap_pipeline(config)
+    provider = get_data_provider(manager, config)
+    worker = provider.create_worker()
     loop = asyncio.get_running_loop()
 
     def _handle_signal() -> None:
@@ -58,7 +59,7 @@ async def run_downloader() -> int:
                 if worker.is_shutdown:
                     break
                 try:
-                    files = await discover_monthly_files(client, config, symbol, timeframe)
+                    files = await provider.discover_files(client, symbol, timeframe)
                     all_files.extend(files)
                 except Exception as exc:
                     logger.error(
