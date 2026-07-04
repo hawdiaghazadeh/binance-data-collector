@@ -20,4 +20,4 @@ Built-in plugins for the crypto-pipeline platform.
 
 ## Domain Reference (Phases 4–21)
 
-See `domain_reference.py` for normalization, indicators, RL, trading, and observability plugins.
+See `quant_platform/plugins/domain/` for normalization, indicators, RL, trading, and observability reference plugins.

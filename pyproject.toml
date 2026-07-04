@@ -46,79 +46,79 @@ atr_feature = "quant_platform.plugins.atr_feature:factory"
 vwap_feature = "quant_platform.plugins.vwap_feature:factory"
 
 [project.entry-points."platform.normalizations"]
-symbol_normalizer = "quant_platform.plugins.domain_reference:symbol_normalizer_factory"
+symbol_normalizer = "quant_platform.plugins.domain.symbol_normalizer:factory"
 
 [project.entry-points."platform.indicators"]
-ema_indicator = "quant_platform.plugins.domain_reference:ema_indicator_factory"
+ema_indicator = "quant_platform.plugins.domain.ema_indicator:factory"
 
 [project.entry-points."platform.market_structures"]
-bos_choch = "quant_platform.plugins.domain_reference:bos_choch_factory"
+bos_choch = "quant_platform.plugins.domain.bos_choch:factory"
 
 [project.entry-points."platform.labels"]
-direction_label = "quant_platform.plugins.domain_reference:direction_label_factory"
+direction_label = "quant_platform.plugins.domain.direction_label:factory"
 
 [project.entry-points."platform.observations"]
-candle_observation = "quant_platform.plugins.domain_reference:candle_observation_factory"
+candle_observation = "quant_platform.plugins.domain.candle_observation:factory"
 
 [project.entry-points."platform.rewards"]
-profit_reward = "quant_platform.plugins.domain_reference:profit_reward_factory"
+profit_reward = "quant_platform.plugins.domain.profit_reward:factory"
 
 [project.entry-points."platform.actions"]
-discrete_action = "quant_platform.plugins.domain_reference:discrete_action_factory"
+discrete_action = "quant_platform.plugins.domain.discrete_action:factory"
 
 [project.entry-points."platform.environments"]
-spot_env = "quant_platform.plugins.domain_reference:spot_env_factory"
+spot_env = "quant_platform.plugins.domain.spot_env:factory"
 
 [project.entry-points."platform.strategies"]
-rule_based = "quant_platform.plugins.domain_reference:rule_based_factory"
+rule_based = "quant_platform.plugins.domain.rule_based:factory"
 
 [project.entry-points."platform.executions"]
-simulation_execution = "quant_platform.plugins.domain_reference:simulation_execution_factory"
+simulation_execution = "quant_platform.plugins.domain.simulation_execution:factory"
 
 [project.entry-points."platform.risks"]
-fixed_risk = "quant_platform.plugins.domain_reference:fixed_risk_factory"
+fixed_risk = "quant_platform.plugins.domain.fixed_risk:factory"
 
 [project.entry-points."platform.portfolios"]
-single_asset = "quant_platform.plugins.domain_reference:single_asset_factory"
+single_asset = "quant_platform.plugins.domain.single_asset:factory"
 
 [project.entry-points."platform.exchanges"]
-binance_exchange = "quant_platform.plugins.domain_reference:binance_exchange_factory"
+binance_exchange = "quant_platform.plugins.domain.binance_exchange:factory"
 
 [project.entry-points."platform.brokers"]
-paper_broker = "quant_platform.plugins.domain_reference:paper_broker_factory"
+paper_broker = "quant_platform.plugins.domain.paper_broker:factory"
 
 [project.entry-points."platform.replay_buffers"]
-uniform_buffer = "quant_platform.plugins.domain_reference:uniform_buffer_factory"
+uniform_buffer = "quant_platform.plugins.domain.uniform_buffer:factory"
 
 [project.entry-points."platform.rl_algorithms"]
-ppo = "quant_platform.plugins.domain_reference:ppo_factory"
+ppo = "quant_platform.plugins.domain.ppo:factory"
 
 [project.entry-points."platform.training_pipelines"]
-standard_rl_train = "quant_platform.plugins.domain_reference:standard_rl_train_factory"
+standard_rl_train = "quant_platform.plugins.domain.standard_rl_train:factory"
 
 [project.entry-points."platform.evaluation_pipelines"]
-walk_forward = "quant_platform.plugins.domain_reference:walk_forward_factory"
+walk_forward = "quant_platform.plugins.domain.walk_forward:factory"
 
 [project.entry-points."platform.backtesting"]
-event_driven = "quant_platform.plugins.domain_reference:event_driven_factory"
+event_driven = "quant_platform.plugins.domain.event_driven:factory"
 
 [project.entry-points."platform.paper_trading"]
-paper_engine = "quant_platform.plugins.domain_reference:paper_engine_factory"
+paper_engine = "quant_platform.plugins.domain.paper_engine:factory"
 
 [project.entry-points."platform.live_trading"]
-live_engine = "quant_platform.plugins.domain_reference:live_engine_factory"
+live_engine = "quant_platform.plugins.domain.live_engine:factory"
 
 [project.entry-points."platform.visualizations"]
-equity_curve = "quant_platform.plugins.domain_reference:equity_curve_factory"
+equity_curve = "quant_platform.plugins.domain.equity_curve:factory"
 
 [project.entry-points."platform.notifications"]
-slack_notifier = "quant_platform.plugins.domain_reference:slack_notifier_factory"
+slack_notifier = "quant_platform.plugins.domain.slack_notifier:factory"
 
 [project.entry-points."platform.monitoring"]
-structlog_monitoring = "quant_platform.plugins.domain_reference:structlog_monitoring_factory"
+structlog_monitoring = "quant_platform.plugins.domain.structlog_monitoring:factory"
 
 [project.entry-points."platform.configurations"]
-schema_config = "quant_platform.plugins.domain_reference:schema_config_factory"
+schema_config = "quant_platform.plugins.domain.schema_config:factory"
 
 [tool.setuptools.packages.find]
 where = ["."]

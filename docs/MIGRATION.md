@@ -104,12 +104,24 @@ Per-phase implementation notes, frozen Protocol versions, and rollback steps.
 - **Added:**
   - `quant_platform/registries/groups.py` — `ALL_REGISTRY_GROUPS` manifest
   - Entry points in `pyproject.toml` for all 30 registry groups
-  - Named factory exports in `domain_reference.py` for domain plugins
+  - Named factory exports in domain plugin packages
 - **Changed:**
   - `register_all_domain_plugins()` discovers via entry points before manual fallback
   - Added `platform.dataset_builders` entry point
 - **Tests:** `tests/platform/test_entry_points_g7.py`
 - **Rollback:** Remove domain entry-point sections from `pyproject.toml`; revert `register_all_domain_plugins()`
+
+## Domain Plugin Split (G8) — Package Per Registry
+
+- **Added:**
+  - `quant_platform/plugins/domain/` — 25 reference plugin packages (one per domain registry)
+  - `quant_platform/plugins/domain/_helpers.py` — shared metadata helpers
+  - `scripts/generate_domain_plugins.py` — generator for reference plugin scaffolds
+- **Changed:**
+  - `domain_reference.py` is a backward-compat shim re-exporting `quant_platform.plugins.domain`
+  - Entry points now target `quant_platform.plugins.domain.<plugin>:factory`
+- **Tests:** `tests/platform/test_domain_split_g8.py`
+- **Rollback:** Restore monolithic `domain_reference.py`; remove `plugins/domain/` packages
 
 ## Phases 4–21 — Domain Registries
 
